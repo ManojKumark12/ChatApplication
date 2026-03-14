@@ -1,4 +1,4 @@
-import { PersonalChatOuterCard } from "../components/PersonalChatOuterCard"
+import { PersonalChatOuterCard } from "./PersonalChatOuterCard"
 
 
 const PersonalChats=()=>{

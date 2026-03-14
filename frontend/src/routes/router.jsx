@@ -2,8 +2,8 @@ import { createBrowserRouter } from "react-router-dom"
 import Layout from "../pages/Layout"
 import ChatRooms from "../pages/ChatRooms"
 import PersonalChats from "../pages/PersonalChats"
-import RoomInner from "../components/RoomInner"
-import PersonalChatInner from "../components/PersonalChatInner"
+import RoomInner from "../pages/RoomInner"
+import PersonalChatInner from "../pages/PersonalChatInner"
 const router = createBrowserRouter([
 {
   path: "/",

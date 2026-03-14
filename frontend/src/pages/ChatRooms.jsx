@@ -1,4 +1,4 @@
-import { RoomOuterCard } from "../components/RoomOuterCard";
+import { RoomOuterCard } from "./RoomOuterCard";
 
 const ChatRooms = () => {
     return (

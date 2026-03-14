@@ -1,12 +1,9 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-
+import { navigateTo } from "../components/helper_functions";
 const Layout = () => {
     const location = useLocation();
+    const swap_location_path=location.pathname === "/" ? "/personal-chats" : "/"
     const navigate = useNavigate();
-
-    const SwapPage = () => {
-        navigate(location.pathname === "/" ? "/personal-chats" : "/");
-    };
 
     return (
         <div className="app-viewport">
@@ -22,7 +19,7 @@ const Layout = () => {
                 </div>
 
                 <div className="nav-actions" style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-                    <button className="swap-btn" onClick={SwapPage}>
+                    <button className="swap-btn" onClick={()=>navigateTo(navigate,swap_location_path)}>
                         {location.pathname === "/" ? "Personal Chats" : "Public Rooms"}
                     </button>
                     

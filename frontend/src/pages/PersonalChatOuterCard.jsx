@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { navigateTo } from "../components/helper_functions";
+import { navigateTo } from "../common/helper_functions";
 export const PersonalChatOuterCard = ({ name, recentMessage = 'Hi', read = false }) => {
     // Generates a consistent color based on the name
     const avatarColor = name.length % 2 === 0 ? '#6366f1' : '#f43f5e';

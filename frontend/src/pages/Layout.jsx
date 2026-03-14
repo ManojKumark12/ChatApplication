@@ -1,5 +1,5 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { navigateTo } from "../components/helper_functions";
+import { navigateTo } from "../common/helper_functions";
 const Layout = () => {
     const location = useLocation();
     const swap_location_path=location.pathname === "/" ? "/personal-chats" : "/"

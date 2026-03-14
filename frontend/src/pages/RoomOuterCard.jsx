@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { navigateTo } from "../components/helper_functions";
+import { navigateTo } from "../common/helper_functions";
 export const RoomOuterCard = ({ title, total, active }) => {
     const navigate=useNavigate()
     return (

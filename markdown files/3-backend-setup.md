@@ -1,0 +1,7 @@
+-created virtual env
+-installed python lib django
+-created project chatApplication
+-created apps ChatRoom and PersonalRooms
+-installed djangorestframework-why
+-installed cors-whats middleware
+-freeze requiremtns.txt

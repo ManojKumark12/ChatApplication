@@ -35,3 +35,5 @@ Contains global CSS styles applied across the application.
 
 Future improvement:
 - Convert styles into **CSS modules** for better scalability and maintainability.
+
+##Profile pic dropdown-used Useref hook and useState hook and position relative and absolute for dropdown -simple only 

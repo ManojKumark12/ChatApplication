@@ -1,7 +1,10 @@
 -created virtual env
 -installed python lib django
 -created project chatApplication
--created apps ChatRoom and PersonalRooms
+-created apps Users,ChatRoom and PersonalRooms
 -installed djangorestframework-why
 -installed cors-whats middleware
 -freeze requiremtns.txt
+-connected with postgres
+-kept credentials in .env and ignored it
+-created superuser

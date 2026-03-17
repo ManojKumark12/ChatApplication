@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import '../style_css/Auth.css';
+import { navigateTo } from '../common/helper_functions';
+import apiFetch from '../common/apiFetch';
+import { toast } from "react-toastify";
 
 const Login = () => {
+const navigate=useNavigate();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -16,11 +20,34 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+        try {
 
-    console.log("Login data:", formData);
+            const response = await apiFetch(
+                `${import.meta.env.VITE_API_URL}/user/login/`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    credentials: "include",
+                    body: JSON.stringify(formData)
+                }
+            );
 
+            if (!response.ok) {
+                toast.error("Invalid Credentials");
+            }
+            else {
+                toast.success("Login Success!");
+                // data=response.json();
+                navigateTo(navigate, "/");
+            }
+
+        } catch (error) {
+            toast.error(error.message);
+        }
     // Later you will send this to backend
   };
 

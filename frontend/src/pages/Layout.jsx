@@ -1,8 +1,12 @@
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { navigateTo } from "../common/helper_functions";
-import { useState,useRef,useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
+import apiFetch from "../common/apiFetch";
+import { toast } from "react-toastify";
+
 const Layout = () => {
+    
     const location = useLocation();
     const swap_location_path = location.pathname === "/" ? "/personal-chats" : "/"
     const navigate = useNavigate();
@@ -20,7 +24,27 @@ const Layout = () => {
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
+
+    const logout = async (e) => {
+        const response = await apiFetch(
+            `${import.meta.env.VITE_API_URL}/user/logout/`,
+            {
+                method: "POST",
+                credentials: "include",
+            }
+        );
+        if (response.ok) {
+            toast.success("Loggged out successfully!");
+            navigateTo(navigate, '/login')
+
+        }
+        else {
+            toast.error("Log Out unsuccess!");
+
+        }
+    }
     return (
+        
         <div className="app-viewport">
             <nav className="top-nav">
 
@@ -49,7 +73,7 @@ const Layout = () => {
                             <div className="avatar-dropdown">
                                 <button className="dropdown-item">Profile</button>
                                 <Link to='/login'><button className="dropdown-item">Login</button></Link>
-                                <button className="dropdown-item">Logout</button>
+                                <button className="dropdown-item" onClick={logout}>Logout</button>
                             </div>
                         )}
 

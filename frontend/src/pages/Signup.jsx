@@ -5,7 +5,8 @@ import apiFetch from "../common/apiFetch";
 import { navigateTo } from "../common/helper_functions";
 import { toast } from "react-toastify";
 const Signup = () => {
-const navigate=useNavigate()
+    const navigate = useNavigate()
+    const [errors, setErrors] = useState({});
     const [formData, setFormData] = useState({
         username: "",
         email: "",
@@ -19,35 +20,40 @@ const navigate=useNavigate()
         });
     };
 
-   const handleSubmit = async (e) => {
-    e.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-    try {
+        try {
 
-        const response = await apiFetch(
-            `${import.meta.env.VITE_API_URL}/user/signup/`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(formData)
+            const response = await apiFetch(
+                `${import.meta.env.VITE_API_URL}/user/signup/`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    credentials: "include",
+                    body: JSON.stringify(formData)
+                }
+            );
+
+            if (!response.ok) {
+                // console.log(response)
+                const errorData=await response.json();
+                setErrors(errorData)
+                // console.log(errorData);
+                toast.error("Signup failed");
             }
-        );
+            else {
+                toast.success("Account created successfully!");
+                // data=response.json();
+                navigateTo(navigate, "/");
+            }
 
-        if (!response.ok) {
-            const data = await response.json();
-            toast.error(data.username?.[0] || "Signup failed");
+        } catch (error) {
+            toast.error(error.message);
         }
-else{
-        toast.success("Account created successfully!");
-        navigateTo(navigate, "/");
-}
-
-    } catch (error) {
-        toast.error(error.message);
-    }
-};
+    };
 
     return (
         <div className="auth-container">
@@ -69,6 +75,7 @@ else{
                             onChange={handleChange}
                             required
                         />
+                        {errors.username && <p className="error">{errors.username[0]}</p>}
                     </div>
 
                     <div className="input-group">
@@ -81,6 +88,7 @@ else{
                             onChange={handleChange}
                             required
                         />
+                        {errors.email && <p className="error">{errors.email[0]}</p>}
                     </div>
 
                     <div className="input-group">
@@ -93,6 +101,7 @@ else{
                             onChange={handleChange}
                             required
                         />
+                        {errors.password && <p className="error">{errors.password[0]}</p>}
                     </div>
 
                     <button type="submit" className="btn-primary">

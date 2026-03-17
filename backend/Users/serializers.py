@@ -16,6 +16,14 @@ class UserSerializer(serializers.ModelSerializer):
         }
         #overriding default create because User.objects.create_user or set_password inserts hashed password
         #unlike User.objects.create()
+    def validate_username(self, username):
+        if len(username) < 4:
+            raise serializers.ValidationError("Username must be at least 4 characters long")
+        return username
+    def validate_password(self,password):
+        if len(password) < 4:
+            raise serializers.ValidationError("Password must be at least 4 characters long")
+        return password       
     def create(self,validated_data):
             # print("ccccccccc")
             password=validated_data.pop('password')

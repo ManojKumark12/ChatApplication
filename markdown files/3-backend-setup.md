@@ -8,3 +8,7 @@
 -connected with postgres
 -kept credentials in .env and ignored it
 -created superuser
+
+--i have used class based view i.e APIView for signup and in serializer hashing password and creating user
+--used token based i.e jwt token based authentication,i.e refresh and access token,which are stored automatically in cookie when sent with response from backend.and credentials:include send the tokens from frontend to backend automatically with each request.
+--serializers convert object to python dict and vice versa and Response objects converts data internally into json string

@@ -4,9 +4,12 @@ import "../style_css/Auth.css";
 import apiFetch from "../common/apiFetch";
 import { navigateTo } from "../common/helper_functions";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { loginfunc } from "../redux/User.slice";
 const Signup = () => {
     const navigate = useNavigate()
     const [errors, setErrors] = useState({});
+    const dispatch=useDispatch();
     const [formData, setFormData] = useState({
         username: "",
         email: "",
@@ -47,6 +50,7 @@ const Signup = () => {
             else {
                 toast.success("Account created successfully!");
                 // data=response.json();
+                dispatch(loginfunc());
                 navigateTo(navigate, "/");
             }
 

@@ -4,7 +4,8 @@ import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import apiFetch from "../common/apiFetch";
 import { toast } from "react-toastify";
-
+import { useDispatch, useSelector } from "react-redux";
+import { logoutfunc } from "../redux/User.slice";
 const Layout = () => {
     
     const location = useLocation();
@@ -12,6 +13,9 @@ const Layout = () => {
     const navigate = useNavigate();
     const [menuOpen, setMenuOpen] = useState(false);
     const avatarRef = useRef(null);
+
+const dispatch = useDispatch();
+const {isloggedin} = useSelector((state) => state.user);
 
     // close dropdown when clicking outside
     useEffect(() => {
@@ -34,8 +38,9 @@ const Layout = () => {
             }
         );
         if (response.ok) {
+            dispatch(logoutfunc());
             toast.success("Loggged out successfully!");
-            navigateTo(navigate, '/login')
+            // navigateTo(navigate, '/login')
 
         }
         else {
@@ -72,8 +77,9 @@ const Layout = () => {
                         {menuOpen && (
                             <div className="avatar-dropdown">
                                 <button className="dropdown-item">Profile</button>
-                                <Link to='/login'><button className="dropdown-item">Login</button></Link>
-                                <button className="dropdown-item" onClick={logout}>Logout</button>
+                             {!isloggedin &&  <Link to='/login'><button className="dropdown-item">Login</button></Link>}
+                               
+                               {isloggedin && <button className="dropdown-item" onClick={logout}>Logout</button>}
                             </div>
                         )}
 

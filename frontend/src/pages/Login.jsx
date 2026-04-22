@@ -4,10 +4,11 @@ import '../style_css/Auth.css';
 import { navigateTo } from '../common/helper_functions';
 import apiFetch from '../common/apiFetch';
 import { toast } from "react-toastify";
-
+import { useDispatch } from 'react-redux';
+import { loginfunc } from '../redux/User.slice';
 const Login = () => {
 const navigate=useNavigate();
-
+const dispatch=useDispatch();
   const [formData, setFormData] = useState({
     email: "",
     password: ""
@@ -42,6 +43,7 @@ const navigate=useNavigate();
             else {
                 toast.success("Login Success!");
                 // data=response.json();
+                dispatch(loginfunc());
                 navigateTo(navigate, "/");
             }
 

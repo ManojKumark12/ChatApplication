@@ -4,11 +4,13 @@ import '../style_css/Auth.css';
 import { navigateTo } from '../common/helper_functions';
 import apiFetch from '../common/apiFetch';
 import { toast } from "react-toastify";
+
 import { useDispatch } from 'react-redux';
 import { loginfunc } from '../redux/User.slice';
 const Login = () => {
-const navigate=useNavigate();
-const dispatch=useDispatch();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [errors, setErrors] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: ""
@@ -23,33 +25,41 @@ const dispatch=useDispatch();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-        try {
-
-            const response = await apiFetch(
-                `${import.meta.env.VITE_API_URL}/user/login/`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    credentials: "include",
-                    body: JSON.stringify(formData)
-                }
-            );
-
-            if (!response.ok) {
-                toast.error("Invalid Credentials");
-            }
-            else {
-                toast.success("Login Success!");
-                // data=response.json();
-                dispatch(loginfunc());
-                navigateTo(navigate, "/");
-            }
-
-        } catch (error) {
-            toast.error(error.message);
+    try {
+      if (!formData.email.trim() || !formData.password.trim()) {
+        setErrors(true);
+        return;
+      } else {
+        setErrors(false);
+      }
+      console.log("trying");
+      const response = await apiFetch(
+        `${import.meta.env.VITE_API_URL}/user/login/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          credentials: "include",
+          body: JSON.stringify(formData)
         }
+      );
+
+      if (!response.ok) {
+        toast.error("Invalid Credentials");
+      }
+      else {
+        const userData=await response.json();
+        // console.log(userData.user);
+        toast.success("Login Success!");
+        // data=response.json();
+        dispatch(loginfunc(userData.user));
+        navigateTo(navigate, "/");
+      }
+
+    } catch (error) {
+      toast.error(error.message);
+    }
     // Later you will send this to backend
   };
 
@@ -62,9 +72,12 @@ const dispatch=useDispatch();
           <p>Please enter your details</p>
         </div>
 
-        <form className="auth-form" onSubmit={handleSubmit}>
-
-          <div className="input-group">
+        <form className="auth-form" onSubmit={handleSubmit} noValidate>
+          {errors && (
+            <p style={{ color: "red", marginBottom: "10px" }}>
+              Please enter email and password
+            </p>
+          )}          <div className="input-group">
             <label>Email Address</label>
             <input
               type="email"
@@ -72,7 +85,8 @@ const dispatch=useDispatch();
               placeholder="name@company.com"
               value={formData.email}
               onChange={handleChange}
-              required
+
+            // required
             />
           </div>
 
@@ -84,7 +98,7 @@ const dispatch=useDispatch();
               placeholder="••••••••"
               value={formData.password}
               onChange={handleChange}
-              required
+            // required
             />
           </div>
 

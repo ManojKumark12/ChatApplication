@@ -6,6 +6,7 @@ import RoomInner from "../pages/RoomInner"
 import PersonalChatInner from "../pages/PersonalChatInner"
 import Signup from "../pages/Signup"
 import Login from "../pages/Login"
+import ChatRoomTemplate from "../pages/ChatRoomTemplate"
 const router = createBrowserRouter([
   {
 path:'/signup',
@@ -34,6 +35,10 @@ element:<Login />
     {
       path:'personal-chat-inner',
       element:<PersonalChatInner />
+    },
+    {
+      path:'chatRoomTemplate',
+      element:<ChatRoomTemplate />
     }
   ]
 }

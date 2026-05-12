@@ -144,8 +144,7 @@ from datetime import timedelta
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-    )
+        "Users.jwt_authentication.CookieJWTAuthentication",    )
 }
 
 SIMPLE_JWT = {

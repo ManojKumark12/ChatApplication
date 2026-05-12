@@ -1,16 +1,20 @@
 import React, { useState } from "react";
+import apiFetch from "../common/apiFetch";
+import { toast } from "react-toastify";
 
 const ChatRoomTemplate = () => {
 
     const [formData, setFormData] = useState({
-        roomName: "",
-        title: "",
+        room_name: "",
         description: "",
-        roomType: "public",
-        image: null
+        room_type: "public",
+        room_image: null
     });
 
+    const [errors, setErrors] = useState({});
+
     const handleChange = (e) => {
+
         const { name, value } = e.target;
 
         setFormData({
@@ -20,21 +24,63 @@ const ChatRoomTemplate = () => {
     };
 
     const handleImageChange = (e) => {
+
         setFormData({
             ...formData,
-            image: e.target.files[0]
+            room_image: e.target.files[0]
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
+
         e.preventDefault();
 
-        console.log(formData);
+        try {
 
-        // API call later
+            const data = new FormData();
+
+            data.append("room_name", formData.room_name);
+            data.append("description", formData.description);
+            data.append("room_type", formData.room_type);
+
+            if (formData.room_image) {
+                data.append("room_image", formData.room_image);
+            }
+
+            const response = await apiFetch(
+                `${import.meta.env.VITE_API_URL}/chatrooms/create/`,
+                {
+                    method: "POST",
+                    credentials: "include",
+                    body: data
+                }
+            );
+
+            const responseData = await response.json();
+
+            if (!response.ok) {
+
+                setErrors(responseData);
+
+                toast.error("Room creation failed");
+            }
+            else {
+
+                setErrors({});
+
+                toast.success("Room created successfully!");
+
+                console.log(responseData);
+            }
+
+        } catch (error) {
+
+            toast.error(error.message);
+        }
     };
 
     return (
+
         <div
             style={{
                 minHeight: "100vh",
@@ -45,6 +91,7 @@ const ChatRoomTemplate = () => {
                 padding: "30px"
             }}
         >
+
             <div
                 style={{
                     width: "100%",
@@ -58,83 +105,53 @@ const ChatRoomTemplate = () => {
 
                 <h2
                     style={{
-                        marginBottom: "10px",
-                        color: "#333"
+                        marginBottom: "20px"
                     }}
                 >
                     Create Chat Room
                 </h2>
 
-                <p
-                    style={{
-                        marginBottom: "25px",
-                        color: "#777"
-                    }}
-                >
-                    Create a new room and start chatting
-                </p>
-
                 <form onSubmit={handleSubmit}>
 
                     {/* Room Name */}
                     <div style={{ marginBottom: "18px" }}>
+
                         <label
-                            style={{
-                                display: "block",
-                                marginBottom: "8px",
-                                fontWeight: "600"
-                            }}
+                            style={labelStyle}
                         >
                             Room Name
                         </label>
 
                         <input
                             type="text"
-                            name="roomName"
+                            name="room_name"
                             placeholder="Enter room name"
-                            value={formData.roomName}
+                            value={formData.room_name}
                             onChange={handleChange}
                             style={inputStyle}
                         />
-                    </div>
 
-                    {/* Title */}
-                    <div style={{ marginBottom: "18px" }}>
-                        <label
-                            style={{
-                                display: "block",
-                                marginBottom: "8px",
-                                fontWeight: "600"
-                            }}
-                        >
-                            Title
-                        </label>
+                        {
+                            errors.room_name &&
+                            <p style={errorStyle}>
+                                {errors.room_name[0]}
+                            </p>
+                        }
 
-                        <input
-                            type="text"
-                            name="title"
-                            placeholder="Short room title"
-                            value={formData.title}
-                            onChange={handleChange}
-                            style={inputStyle}
-                        />
                     </div>
 
                     {/* Description */}
                     <div style={{ marginBottom: "18px" }}>
+
                         <label
-                            style={{
-                                display: "block",
-                                marginBottom: "8px",
-                                fontWeight: "600"
-                            }}
+                            style={labelStyle}
                         >
                             Description
                         </label>
 
                         <textarea
                             name="description"
-                            placeholder="Describe your room..."
+                            placeholder="Enter description"
                             rows="4"
                             value={formData.description}
                             onChange={handleChange}
@@ -143,18 +160,23 @@ const ChatRoomTemplate = () => {
                                 resize: "none"
                             }}
                         />
+
+                        {
+                            errors.description &&
+                            <p style={errorStyle}>
+                                {errors.description[0]}
+                            </p>
+                        }
+
                     </div>
 
-                    {/* Room Image */}
+                    {/* Image */}
                     <div style={{ marginBottom: "18px" }}>
+
                         <label
-                            style={{
-                                display: "block",
-                                marginBottom: "8px",
-                                fontWeight: "600"
-                            }}
+                            style={labelStyle}
                         >
-                            Room Profile Picture
+                            Room Image
                         </label>
 
                         <input
@@ -162,16 +184,21 @@ const ChatRoomTemplate = () => {
                             accept="image/*"
                             onChange={handleImageChange}
                         />
+
+                        {
+                            errors.room_image &&
+                            <p style={errorStyle}>
+                                {errors.room_image[0]}
+                            </p>
+                        }
+
                     </div>
 
                     {/* Room Type */}
                     <div style={{ marginBottom: "25px" }}>
+
                         <label
-                            style={{
-                                display: "block",
-                                marginBottom: "10px",
-                                fontWeight: "600"
-                            }}
+                            style={labelStyle}
                         >
                             Room Type
                         </label>
@@ -179,36 +206,50 @@ const ChatRoomTemplate = () => {
                         <div
                             style={{
                                 display: "flex",
-                                gap: "20px"
+                                gap: "20px",
+                                marginTop: "8px"
                             }}
                         >
 
                             <label>
+
                                 <input
                                     type="radio"
-                                    name="roomType"
+                                    name="room_type"
                                     value="public"
-                                    checked={formData.roomType === "public"}
+                                    checked={formData.room_type === "public"}
                                     onChange={handleChange}
                                 />
+
                                 {" "}Public
+
                             </label>
 
                             <label>
+
                                 <input
                                     type="radio"
-                                    name="roomType"
+                                    name="room_type"
                                     value="private"
-                                    checked={formData.roomType === "private"}
+                                    checked={formData.room_type === "private"}
                                     onChange={handleChange}
                                 />
+
                                 {" "}Private
+
                             </label>
 
                         </div>
+
+                        {
+                            errors.room_type &&
+                            <p style={errorStyle}>
+                                {errors.room_type[0]}
+                            </p>
+                        }
+
                     </div>
 
-                    {/* Submit Button */}
                     <button
                         type="submit"
                         style={{
@@ -227,7 +268,9 @@ const ChatRoomTemplate = () => {
                     </button>
 
                 </form>
+
             </div>
+
         </div>
     );
 };
@@ -238,8 +281,20 @@ const inputStyle = {
     borderRadius: "8px",
     border: "1px solid #ccc",
     outline: "none",
+    marginTop: "6px",
     fontSize: "14px",
     boxSizing: "border-box"
+};
+
+const labelStyle = {
+    display: "block",
+    fontWeight: "600"
+};
+
+const errorStyle = {
+    color: "red",
+    fontSize: "13px",
+    marginTop: "5px"
 };
 
 export default ChatRoomTemplate;

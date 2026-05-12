@@ -1,56 +1,133 @@
+import { useEffect, useState } from "react";
 import { RoomOuterCard } from "./RoomOuterCard";
-import { Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import apiFetch from "../common/apiFetch";
 
 const ChatRooms = () => {
 
+    const [ChatRoomsData, setChatRoomsData] = useState([]);
+
+    const loadData = async () => {
+
+        try {
+
+            const response = await apiFetch(
+                `${import.meta.env.VITE_API_URL}/chatrooms/rooms/`,
+                {
+                    method: "GET",
+                    credentials: "include",
+                }
+            );
+
+            const result = await response.json();
+
+            setChatRoomsData(result);
+
+        } catch (error) {
+
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+
+        loadData();
+
+    }, []);
 
     return (
+
         <div
             style={{
-                padding: '40px',
-                backgroundColor: '#f8f9fa',
-                minHeight: '100vh'
+                minHeight: "100vh",
+                background: "#f4f7fb",
+                padding: "40px"
             }}
         >
 
-            {/* Header Section */}
+            {/* Header */}
             <div
                 style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginBottom: '25px'
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: "35px"
                 }}
             >
-                <h2 style={{ color: '#444', margin: 0 }}>
-                    Available Rooms
-                </h2>
 
-<Link to="/chatRoomTemplate">
-                <button
-                    // onClick={handleCreateRoom}
-                    style={{
-                        padding: '10px 18px',
-                        backgroundColor: '#4f46e5',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '8px',
-                        cursor: 'pointer',
-                        fontSize: '14px',
-                        fontWeight: '600'
-                    }}
-                >
-                    + Create Room
-                </button>
+                <div>
+
+                    <h1
+                        style={{
+                            margin: 0,
+                            fontSize: "32px",
+                            color: "#222"
+                        }}
+                    >
+                        Chat Rooms
+                    </h1>
+
+                    <p
+                        style={{
+                            marginTop: "8px",
+                            color: "#666",
+                            fontSize: "15px"
+                        }}
+                    >
+                        Join communities and start chatting
+                    </p>
+
+                </div>
+
+                <Link to="/chatRoomTemplate">
+
+                    <button
+                        style={{
+                            padding: "12px 22px",
+                            background: "#4f46e5",
+                            color: "white",
+                            border: "none",
+                            borderRadius: "10px",
+                            cursor: "pointer",
+                            fontWeight: "600",
+                            fontSize: "15px",
+                            boxShadow: "0 4px 12px rgba(79,70,229,0.25)"
+                        }}
+                    >
+                        + Create Room
+                    </button>
+
                 </Link>
+
             </div>
 
-            {/* Rooms */}
-            <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-                <RoomOuterCard title="PUBG GAMERS" total={30} active={10} />
-                <RoomOuterCard title="Call of Duty" total={150} active={42} />
-                <RoomOuterCard title="Strategy Hub" total={12} active={3} />
-                <RoomOuterCard title="Minecraft Builders" total={89} active={20} />
+            {/* Rooms Grid */}
+            <div
+                style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))",
+                    gap: "24px"
+                }}
+            >
+
+                {
+                    ChatRoomsData.map((room) => (
+
+                        <RoomOuterCard
+                            key={room.id}
+                            roomId={room.id}
+                            title={room.room_name}
+                            total={room.total_members}
+                            type={room.room_type}
+                            image={room.room_image}
+                            owner={room.owner}
+                            description={room.description}
+                                members={room.members}
+                        />
+
+                    ))
+                }
+
             </div>
 
         </div>

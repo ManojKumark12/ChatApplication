@@ -40,10 +40,11 @@ class ChatRoom(models.Model):
     created_at = models.DateTimeField(
         auto_now_add=True
     )
-
-    # updated_at = models.DateTimeField(
-    #     auto_now=True
-    # )
+    members = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name='joined_rooms',
+        blank=True
+    )
 
     def __str__(self):
         return self.room_name

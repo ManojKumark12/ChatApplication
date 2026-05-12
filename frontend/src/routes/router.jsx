@@ -29,7 +29,7 @@ element:<Login />
       element: <PersonalChats />
     },
     {
-      path:'room-inner',
+      path:'room-inner/:roomId',
       element:<RoomInner />
     },
     {

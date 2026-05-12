@@ -95,3 +95,5 @@ class Logout(APIView):
         response.delete_cookie('access')
         response.delete_cookie('refresh')
         return response
+# def UserProfile(APIView):
+#     def get(self,request):

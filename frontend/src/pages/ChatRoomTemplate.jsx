@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import apiFetch from "../common/apiFetch";
 import { toast } from "react-toastify";
-
+import { useNavigate } from "react-router-dom";
+// import { navigateTo } from "../common/helper_functions";
+// useNavigate
 const ChatRoomTemplate = () => {
-
+const navigate=useNavigate()
     const [formData, setFormData] = useState({
         room_name: "",
         description: "",
@@ -69,8 +71,9 @@ const ChatRoomTemplate = () => {
                 setErrors({});
 
                 toast.success("Room created successfully!");
+                navigate('/')
 
-                console.log(responseData);
+                // console.log(responseData);
             }
 
         } catch (error) {

@@ -48,10 +48,14 @@ const Signup = () => {
                 toast.error("Signup failed");
             }
             else {
-                toast.success("Account created successfully!");
-                // data=response.json();
-                dispatch(loginfunc());
-                navigateTo(navigate, "/");
+             
+    const res = await response.json();
+
+    toast.success("Account created successfully!");
+
+    dispatch(loginfunc(res.user));
+
+    navigateTo(navigate, "/");
             }
 
         } catch (error) {

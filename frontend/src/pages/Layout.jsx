@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import apiFetch from "../common/apiFetch";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
-import { logoutfunc } from "../redux/User.slice";
+import { logoutfunc,loginfunc } from "../redux/User.slice";
 const Layout = () => {
     
     const location = useLocation();
@@ -15,9 +15,40 @@ const Layout = () => {
     const avatarRef = useRef(null);
 
 const dispatch = useDispatch();
+useEffect(() => {
+
+    const loadUser = async () => {
+
+        try {
+
+            const response = await apiFetch(
+                `${import.meta.env.VITE_API_URL}/user/profile/`,
+                {
+                    method: "GET",
+                    credentials: "include"
+                }
+            );
+
+            if (response.ok) {
+
+                const result = await response.json();
+
+                dispatch(loginfunc(result));
+            }
+
+        } catch (error) {
+
+            console.log(error);
+        }
+    };
+
+    loadUser();
+
+}, []);
 const { isloggedin, user } = useSelector(
     (state) => state.user
 );
+
     // close dropdown when clicking outside
     useEffect(() => {
         function handleClickOutside(e) {

@@ -9,56 +9,97 @@ import { loginfunc } from "../redux/User.slice";
 const Signup = () => {
     const navigate = useNavigate()
     const [errors, setErrors] = useState({});
-    const dispatch=useDispatch();
+    const dispatch = useDispatch();
     const [formData, setFormData] = useState({
         username: "",
         email: "",
-        password: ""
+        password: "",
+        profile_photo: null
     });
 
     const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
+
+        if (e.target.name === "profile_photo") {
+
+            setFormData({
+                ...formData,
+                [e.target.name]: e.target.files[0]
+            });
+
+        } else {
+
+            setFormData({
+                ...formData,
+                [e.target.name]: e.target.value
+            });
+        }
     };
 
     const handleSubmit = async (e) => {
+
         e.preventDefault();
 
         try {
+
+            const submitData = new FormData();
+
+            submitData.append(
+                "username",
+                formData.username
+            );
+
+            submitData.append(
+                "email",
+                formData.email
+            );
+
+            submitData.append(
+                "password",
+                formData.password
+            );
+
+            if (formData.profile_photo) {
+
+                submitData.append(
+                    "profile_photo",
+                    formData.profile_photo
+                );
+            }
 
             const response = await apiFetch(
                 `${import.meta.env.VITE_API_URL}/user/signup/`,
                 {
                     method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
+
                     credentials: "include",
-                    body: JSON.stringify(formData)
+
+                    body: submitData
                 }
             );
 
             if (!response.ok) {
-                // console.log(response)
-                const errorData=await response.json();
-                setErrors(errorData)
-                // console.log(errorData);
+
+                const errorData = await response.json();
+
+                setErrors(errorData);
+
                 toast.error("Signup failed");
-            }
-            else {
-             
-    const res = await response.json();
 
-    toast.success("Account created successfully!");
+            } else {
 
-    dispatch(loginfunc(res.user));
+                const res = await response.json();
 
-    navigateTo(navigate, "/");
+                toast.success(
+                    "Account created successfully!"
+                );
+
+                dispatch(loginfunc(res.user));
+
+                navigateTo(navigate, "/");
             }
 
         } catch (error) {
+
             toast.error(error.message);
         }
     };
@@ -72,7 +113,19 @@ const Signup = () => {
                 </div>
 
                 <form className="auth-form" onSubmit={handleSubmit}>
+                    <div className="input-group">
 
+                        <label>Profile Photo</label>
+
+                        <input
+                            type="file"
+                            name="profile_photo"
+                            accept="image/*"
+                            onChange={handleChange}
+                        />
+
+                    </div>
+                    
                     <div className="input-group">
                         <label>Full Name</label>
                         <input

@@ -26,12 +26,70 @@ class CreateRoom(APIView):
 
 class Rooms(APIView):
 
-    def get(self, request):
+    def get(self, request, room_id=None):
+
+        if room_id:
+
+            room = ChatRoom.objects.get(id=room_id)
+
+            serializer = ChatRoomSerializer(
+                room,
+                context={"request": request}
+            )
+
+            return Response(serializer.data)
 
         rooms = ChatRoom.objects.all()
 
-        serializer = ChatRoomSerializer(rooms, many=True)
-        # final_data=serializer.data
-        # final_dat
+        serializer = ChatRoomSerializer(
+            rooms,
+            many=True,
+            context={"request": request}
+        )
 
-        return Response(serializer.data, status=200)
+        return Response(serializer.data)
+
+class JoinRoom(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, room_id):
+
+        try:
+
+            room = ChatRoom.objects.get(id=room_id)
+
+        except ChatRoom.DoesNotExist:
+
+            return Response(
+                {"error": "Room not found"},
+                status=404
+            )
+
+        already_joined = room.members.filter(
+            id=request.user.id
+        ).exists()
+
+        # Leave room
+        if already_joined:
+
+            room.members.remove(request.user)
+
+            return Response(
+                {
+                    "message": "Left room successfully",
+                    "join": False
+                },
+                status=200
+            )
+
+        # Join room
+        room.members.add(request.user)
+
+        return Response(
+            {
+                "message": "Joined room successfully",
+                "join": True
+            },
+            status=200
+        )   

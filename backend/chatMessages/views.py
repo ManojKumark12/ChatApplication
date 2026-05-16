@@ -13,6 +13,27 @@ class RoomMessages(APIView):
 
     def get(self, request, room_id):
 
+        try:
+
+            room = ChatRoom.objects.get(id=room_id)
+
+        except ChatRoom.DoesNotExist:
+
+            return Response(
+                {"error": "Room not found"},
+                status=404
+            )
+
+        # CHECK MEMBERSHIP
+        if not room.members.filter(
+            id=request.user.id
+        ).exists():
+
+            return Response(
+                {"error": "You are not a member of this room"},
+                status=403
+            )
+
         messages = Message.objects.filter(
             room_id=room_id
         ).order_by('sent_at')
@@ -23,8 +44,6 @@ class RoomMessages(APIView):
         )
 
         return Response(serializer.data)
-
-
 class SendMessage(APIView):
 
     permission_classes = [IsAuthenticated]
@@ -40,6 +59,16 @@ class SendMessage(APIView):
             return Response(
                 {"error": "Room not found"},
                 status=404
+            )
+
+        # CHECK MEMBERSHIP
+        if not room.members.filter(
+            id=request.user.id
+        ).exists():
+
+            return Response(
+                {"error": "Join the room first"},
+                status=403
             )
 
         content = request.data.get("content")

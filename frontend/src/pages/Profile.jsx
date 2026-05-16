@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import apiFetch from "../common/apiFetch";
 import { RoomOuterCard } from "./RoomOuterCard";
-
+import { toast } from "react-toastify";
+// toast
 const Profile = () => {
 
     const [userData, setUserData] = useState(null);
@@ -21,12 +22,12 @@ const Profile = () => {
             );
 
             const result = await response.json();
-console.log(result);
+// console.log(result);
             setUserData(result);
 
         } catch (error) {
 
-            console.log(error);
+        toast.error("Unable to load profile");
         }
     };
 

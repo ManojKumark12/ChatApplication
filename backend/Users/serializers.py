@@ -1,17 +1,26 @@
 from rest_framework import serializers
 from .models import User
-
+from chatRooms.serializers import ChatRoomSerializer
 class UserSerializer(serializers.ModelSerializer):
+    joined_rooms = ChatRoomSerializer(
+        many=True,
+        read_only=True
+    )
 
+    created_rooms = ChatRoomSerializer(
+        many=True,
+        read_only=True
+    )
     class Meta:
         model = User
-        fields = ['id','username', 'email', 'phone', 'password', 'bio', 'city']
+        fields = ['id','username', 'email', 'phone', 'password', 'bio', 'city','joined_rooms','created_rooms','profile_photo']
 
         extra_kwargs = {
             'password': {'write_only': True},
             'bio': {'required': False, 'allow_blank': True},
             'city': {'required': False, 'allow_blank': True},
             'phone': {'required': False, 'allow_blank': True},
+            'profile_photo':{'required':False,'allow_null':True}
 
         }
         #overriding default create because User.objects.create_user or set_password inserts hashed password

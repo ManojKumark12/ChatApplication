@@ -6,6 +6,8 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import api_view
 from .models import User
 from django.contrib.auth import authenticate
+from rest_framework.permissions import IsAuthenticated
+
 @api_view(['POST'])
 def Login(request):
     email=request.data['email']
@@ -97,3 +99,15 @@ class Logout(APIView):
         return response
 # def UserProfile(APIView):
 #     def get(self,request):
+class Profile(APIView):
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+
+        serializer = UserSerializer(request.user)
+
+        return Response(
+            serializer.data,
+            status=status.HTTP_200_OK
+        )

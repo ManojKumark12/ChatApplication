@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'personalRooms',
     'Users',
     'rest_framework',
+    'chatMessages',
         "corsheaders"
 
 ]
@@ -152,3 +153,9 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
 CORS_ALLOW_CREDENTIALS = True
+
+
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = BASE_DIR / 'media'

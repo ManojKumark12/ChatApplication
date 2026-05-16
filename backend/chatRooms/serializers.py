@@ -12,7 +12,7 @@ class RoomMemberSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'username',
-            'email'
+            'email','profile_photo'
         ]
 
 
@@ -29,6 +29,7 @@ class ChatRoomSerializer(serializers.ModelSerializer):
         many=True,
         read_only=True
     )
+    is_member = serializers.SerializerMethodField()
 
     class Meta:
 
@@ -44,7 +45,8 @@ class ChatRoomSerializer(serializers.ModelSerializer):
             'created_at',
             'total_members',
             'owner',
-            'members'
+            'members',
+            'is_member'
         ]
 
         read_only_fields = [
@@ -70,3 +72,14 @@ class ChatRoomSerializer(serializers.ModelSerializer):
     def get_total_members(self, obj):
 
         return obj.members.count()
+    def get_is_member(self, obj):
+
+        request = self.context.get("request")
+
+        if request and request.user.is_authenticated:
+
+            return obj.members.filter(
+                id=request.user.id
+            ).exists()
+
+        return False

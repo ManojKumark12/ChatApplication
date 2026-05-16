@@ -7,6 +7,7 @@ import PersonalChatInner from "../pages/PersonalChatInner"
 import Signup from "../pages/Signup"
 import Login from "../pages/Login"
 import ChatRoomTemplate from "../pages/ChatRoomTemplate"
+import Profile from "../pages/Profile"
 const router = createBrowserRouter([
   {
 path:'/signup',
@@ -23,6 +24,10 @@ element:<Login />
     {
       index: true,
       element: <ChatRooms />
+    },
+    { path: "profile",
+      element: <Profile />
+
     },
     {
       path: "personal-chats",

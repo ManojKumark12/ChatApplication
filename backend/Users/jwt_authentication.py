@@ -1,6 +1,6 @@
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.exceptions import InvalidToken
-
+from rest_framework.exceptions import AuthenticationFailed
 
 class CookieJWTAuthentication(JWTAuthentication):
 
@@ -10,6 +10,9 @@ class CookieJWTAuthentication(JWTAuthentication):
 
         if not access_token:
             return None
+            # raise AuthenticationFailed(
+            #     "Please login first"
+            # )
 
         try:
 

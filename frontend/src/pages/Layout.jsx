@@ -72,6 +72,7 @@ const { isloggedin, user } = useSelector(
         if (response.ok) {
             dispatch(logoutfunc());
             toast.success("Loggged out successfully!");
+                navigate("/");
             // navigateTo(navigate, '/login')
 
         }

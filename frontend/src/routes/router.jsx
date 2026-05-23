@@ -8,6 +8,7 @@ import Signup from "../pages/Signup"
 import Login from "../pages/Login"
 import ChatRoomTemplate from "../pages/ChatRoomTemplate"
 import Profile from "../pages/Profile"
+import EditProfile from "../pages/EditProfile"
 const router = createBrowserRouter([
   {
 path:'/signup',
@@ -28,6 +29,10 @@ element:<Login />
     { path: "profile",
       element: <Profile />
 
+    },
+    {
+    path:"/edit-profile",
+    element:<EditProfile />
     },
     {
       path: "personal-chats",

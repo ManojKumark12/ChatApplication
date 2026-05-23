@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import apiFetch from "../common/apiFetch";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import handleResponseError from "../common/handleError";
 // import { navigateTo } from "../common/helper_functions";
 // useNavigate
 const ChatRoomTemplate = () => {
@@ -64,8 +65,7 @@ const navigate=useNavigate()
 
                 setErrors(responseData);
 
-                toast.error("Room creation failed");
-            }
+    handleResponseError(response);            }
             else {
 
                 setErrors({});

@@ -3,6 +3,7 @@ import apiFetch from "../common/apiFetch";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import handleResponseError from "../common/handleError";
 const RoomInner = () => {
 
     const { roomId } = useParams();
@@ -31,10 +32,13 @@ const RoomInner = () => {
             );
 
             const result = await response.json();
-
+console.log(result);
             setRoomData(result);
 
             setJoined(result.is_member);
+            if (!response.ok){
+                toast.error("Please Login");
+            }
 
         } catch (error) {
 
@@ -42,46 +46,46 @@ const RoomInner = () => {
         }
     };
 
-const loadMessages = async () => {
-
-    try {
-
-        const response = await apiFetch(
-            `${import.meta.env.VITE_API_URL}/messages/room/${roomId}/`,
-            {
-                method: "GET",
-                credentials: "include"
-            }
-        );
-
-        let result = {};
+    const loadMessages = async () => {
 
         try {
 
-            result = await response.json();
+            const response = await apiFetch(
+                `${import.meta.env.VITE_API_URL}/messages/room/${roomId}/`,
+                {
+                    method: "GET",
+                    credentials: "include"
+                }
+            );
 
-        } catch {
+            let result = {};
 
-            result = {};
+            try {
+
+                result = await response.json();
+
+            } catch {
+
+                result = {};
+            }
+
+            if (response.ok) {
+
+                setMessages(result);
+
+            } else {
+                // toast.error(
+                //     result.error ||
+                //     result.detail ||
+                //     "Something went wrong"
+                // );
+            }
+
+        } catch (error) {
+
+            toast.error(error.message);
         }
-
-        if (response.ok) {
-
-            setMessages(result);
-
-        } else {
-toast.error(
-    result.error ||
-    result.detail ||
-    "Something went wrong"
-);
-        }
-
-    } catch (error) {
-
-        toast.error(error.message);
-    }
-};
+    };
     useEffect(() => {
 
         loadRoom();
@@ -112,67 +116,73 @@ toast.error(
 
             } else {
 
-toast.error(
-    result.error ||
-    result.detail ||
-    "Something went wrong"
-);            }
+               handleResponseError(response)
+            }
 
         } catch (error) {
 
             toast.error(error.message);
         }
     };
-const sendMessage = async () => {
+    useEffect(() => {
 
-    if (!messageInput.trim()) {
+        if (joined) {
 
-        return;
-    }
-
-    try {
-
-        const response = await apiFetch(
-            `${import.meta.env.VITE_API_URL}/messages/send/${roomId}/`,
-            {
-                method: "POST",
-
-                credentials: "include",
-
-                headers: {
-                    "Content-Type": "application/json"
-                },
-
-                body: JSON.stringify({
-                    content: messageInput
-                })
-            }
-        );
-
-        const result = await response.json();
-
-        if (response.ok) {
-
-            setMessages((prev) => [
-                ...prev,
-                result
-            ]);
-
-            setMessageInput("");
+            loadMessages();
 
         } else {
 
-toast.error(
-    result.error ||
-    result.detail ||
-    "Something went wrong"
-);     }
+            setMessages([]);
+        }
 
-    } catch (error) {
+    }, [joined]);
+    const sendMessage = async () => {
 
-        toast.error(error.message);
-    }
-};
+        if (!messageInput.trim()) {
+
+            return;
+        }
+
+        try {
+
+            const response = await apiFetch(
+                `${import.meta.env.VITE_API_URL}/messages/send/${roomId}/`,
+                {
+                    method: "POST",
+
+                    credentials: "include",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        content: messageInput
+                    })
+                }
+            );
+
+            const result = await response.json();
+
+            if (response.ok) {
+
+                setMessages((prev) => [
+                    ...prev,
+                    result
+                ]);
+
+                setMessageInput("");
+
+            } else {
+
+                handleResponseError(response)
+            }
+
+        } catch (error) {
+
+            toast.error(error.message);
+        }
+    };
     return (
 
         <div
@@ -569,7 +579,7 @@ toast.error(
                                             member.profile_photo ? (
 
                                                 <img
-                                                    src={`${import.meta.env.VITE_API_URL}${member.profile_photo}`}
+                                                    src={`${member.profile_photo}`}
 
                                                     alt={member.username}
 

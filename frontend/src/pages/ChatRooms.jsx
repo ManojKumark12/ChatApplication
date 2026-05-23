@@ -21,8 +21,11 @@ const ChatRooms = () => {
 
             const result = await response.json();
 
-            setChatRoomsData(result);
-
+setChatRoomsData(
+    Array.isArray(result)
+        ? result
+        : []
+);
         } catch (error) {
 
             console.log(error);

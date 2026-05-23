@@ -111,3 +111,23 @@ class Profile(APIView):
             serializer.data,
             status=status.HTTP_200_OK
         )
+    def put(self, request):
+        print("iiii")
+        serializer = UserSerializer(
+            request.user,
+            data=request.data,
+            partial=True,
+            context={"request": request}
+        )
+
+        if serializer.is_valid():
+
+            serializer.save()
+
+            return Response(serializer.data)
+        print(serializer.errors)
+        return Response(
+            serializer.errors,
+            status=400
+        )
+    

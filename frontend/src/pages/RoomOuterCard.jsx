@@ -31,10 +31,13 @@ export const RoomOuterCard = ({
         >
 
             <img
-                src={
-                    image ||
-                    "https://images.unsplash.com/photo-1516321318423-f06f85e504b3"
-                }
+               src={
+    image
+        ? image.startsWith("http")
+            ? image
+            : `${import.meta.env.VITE_API_URL}${image}`
+        : "https://images.unsplash.com/photo-1516321318423-f06f85e504b3"
+}
                 alt={title}
                 style={{
                     width: "100%",
@@ -99,15 +102,15 @@ export const RoomOuterCard = ({
                 >
                     {description || "No description available"}
                 </p>
-<div
-    style={{
-        marginTop: "10px",
-        fontSize: "14px",
-        color: "#555"
-    }}
->
-    Created by: <strong>{owner}</strong>
-</div>
+                <div
+                    style={{
+                        marginTop: "10px",
+                        fontSize: "14px",
+                        color: "#555"
+                    }}
+                >
+                    Created by: <strong>{owner}</strong>
+                </div>
                 <div
                     style={{
                         marginTop: "16px",
@@ -126,14 +129,14 @@ export const RoomOuterCard = ({
                         👥 {total} Members
                     </div>
 
-                    <div
+                    {/* <div
                         style={{
                             color: "#4f46e5",
                             fontWeight: "600"
                         }}
                     >
                         Join →
-                    </div>
+                    </div> */}
 
                 </div>
 

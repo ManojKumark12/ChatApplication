@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import apiFetch from "../common/apiFetch";
 import { RoomOuterCard } from "./RoomOuterCard";
 import { toast } from "react-toastify";
-// toast
+import { useSelector } from "react-redux";
 const Profile = () => {
 
     const [userData, setUserData] = useState(null);
-
     const [activeTab, setActiveTab] = useState("joined");
-
+const { isloggedin } = useSelector(
+    (state) => state.user
+);
     const loadProfile = async () => {
 
         try {
@@ -172,6 +173,34 @@ const Profile = () => {
                             </div>
 
                             {/* RIGHT STATS */}
+                            <div
+    style={{
+        display: "flex",
+        justifyContent: "center",
+        marginTop: "18px"
+    }}
+>
+{isloggedin &&
+    <button
+        onClick={() => {
+            window.location.href = "/edit-profile";
+        }}
+
+        style={{
+            padding: "12px 22px",
+            background: "#111827",
+            color: "white",
+            border: "none",
+            borderRadius: "12px",
+            cursor: "pointer",
+            fontWeight: "700",
+            fontSize: "15px"
+        }}
+    >
+        Edit Profile
+    </button>
+}
+</div>
                             <div
                                 style={{
                                     display: "flex",

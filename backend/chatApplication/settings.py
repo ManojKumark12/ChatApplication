@@ -34,6 +34,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+        'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,10 +46,12 @@ INSTALLED_APPS = [
     'Users',
     'rest_framework',
     'chatMessages',
-        "corsheaders"
+        "corsheaders",
+            'channels',
+
 
 ]
-
+ASGI_APPLICATION = "chatApplication.asgi.application"
 MIDDLEWARE = [
         'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -159,3 +162,13 @@ CORS_ALLOW_CREDENTIALS = True
 MEDIA_URL = '/media/'
 
 MEDIA_ROOT = BASE_DIR / 'media'
+
+CHANNEL_LAYERS = {
+
+    "default": {
+
+        "BACKEND":
+
+            "channels.layers.InMemoryChannelLayer"
+    }
+}

@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import handleResponseError from "../common/handleError";
 const RoomInner = () => {
-
+    const [socket, setSocket] = useState(null);
     const { roomId } = useParams();
 
     const [joined, setJoined] = useState(false);
@@ -32,11 +32,11 @@ const RoomInner = () => {
             );
 
             const result = await response.json();
-console.log(result);
+            // console.log(result);
             setRoomData(result);
 
             setJoined(result.is_member);
-            if (!response.ok){
+            if (!response.ok) {
                 toast.error("Please Login");
             }
 
@@ -116,7 +116,7 @@ console.log(result);
 
             } else {
 
-               handleResponseError(response)
+                handleResponseError(response)
             }
 
         } catch (error) {
@@ -138,51 +138,114 @@ console.log(result);
     }, [joined]);
     const sendMessage = async () => {
 
-        if (!messageInput.trim()) {
+        // if (!messageInput.trim()) {
 
-            return;
-        }
+        //     return;
+        // }
 
-        try {
+            if (!messageInput.trim()) {
 
-            const response = await apiFetch(
-                `${import.meta.env.VITE_API_URL}/messages/send/${roomId}/`,
-                {
-                    method: "POST",
-
-                    credentials: "include",
-
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-
-                    body: JSON.stringify({
-                        content: messageInput
-                    })
-                }
-            );
-
-            const result = await response.json();
-
-            if (response.ok) {
-
-                setMessages((prev) => [
-                    ...prev,
-                    result
-                ]);
-
-                setMessageInput("");
-
-            } else {
-
-                handleResponseError(response)
+                return;
             }
 
-        } catch (error) {
+            socket.send(
 
-            toast.error(error.message);
-        }
-    };
+                JSON.stringify({
+
+                    message: messageInput,
+
+                    sender_id: user.id
+                })
+            );
+
+            setMessageInput("");
+        };
+
+        // try {
+
+
+        //     const response = await apiFetch(
+        //         `${import.meta.env.VITE_API_URL}/messages/send/${roomId}/`,
+        //         {
+        //             method: "POST",
+
+        //             credentials: "include",
+
+        //             headers: {
+        //                 "Content-Type": "application/json"
+        //             },
+
+        //             body: JSON.stringify({
+        //                 content: messageInput
+        //             })
+        //         }
+        //     );
+
+        //     const result = await response.json();
+
+        //     if (response.ok) {
+
+        //         setMessages((prev) => [
+        //             ...prev,
+        //             result
+        //         ]);
+
+        //         setMessageInput("");
+
+        //     } else {
+
+        //         handleResponseError(response)
+        //     }
+
+        // } catch (error) {
+
+        //     toast.error(error.message);
+        // }
+    useEffect(() => {
+
+        if (!joined) return;
+
+        const ws = new WebSocket(
+
+            `ws://localhost:8000/ws/chat/${roomId}/`
+        );
+
+        ws.onopen = () => {
+
+            console.log(
+                "WebSocket Connected"
+            );
+        };
+
+        ws.onmessage = (event) => {
+
+            const data = JSON.parse(
+                event.data
+            );
+
+            setMessages((prev) => [
+
+                ...prev,
+
+                data
+            ]);
+        };
+
+        ws.onclose = () => {
+
+            console.log(
+                "WebSocket Closed"
+            );
+        };
+
+        setSocket(ws);
+
+        return () => {
+
+            ws.close();
+        };
+
+    }, [roomId, joined]);
     return (
 
         <div

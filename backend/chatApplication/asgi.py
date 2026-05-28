@@ -27,7 +27,7 @@ import chatMessages.routing
 application = ProtocolTypeRouter({
 
     "http":
-        django_asgi_app,
+        django_asgi_app,####Normal Asgi Flow,redirection
 
     "websocket":
 

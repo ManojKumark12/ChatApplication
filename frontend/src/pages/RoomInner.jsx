@@ -143,71 +143,79 @@ const RoomInner = () => {
         //     return;
         // }
 
-            if (!messageInput.trim()) {
+        if (!messageInput.trim()) {
 
-                return;
-            }
+            return;
+        }
 
-            socket.send(
+        socket.send(
 
-                JSON.stringify({
+            JSON.stringify({
 
-                    message: messageInput,
+                message: messageInput,
 
-                    sender_id: user.id
-                })
-            );
+                sender_id: user.id
+            })
+        );
 
-            setMessageInput("");
-        };
+        setMessageInput("");
+    };
 
-        // try {
+    // try {
 
 
-        //     const response = await apiFetch(
-        //         `${import.meta.env.VITE_API_URL}/messages/send/${roomId}/`,
-        //         {
-        //             method: "POST",
+    //     const response = await apiFetch(
+    //         `${import.meta.env.VITE_API_URL}/messages/send/${roomId}/`,
+    //         {
+    //             method: "POST",
 
-        //             credentials: "include",
+    //             credentials: "include",
 
-        //             headers: {
-        //                 "Content-Type": "application/json"
-        //             },
+    //             headers: {
+    //                 "Content-Type": "application/json"
+    //             },
 
-        //             body: JSON.stringify({
-        //                 content: messageInput
-        //             })
-        //         }
-        //     );
+    //             body: JSON.stringify({
+    //                 content: messageInput
+    //             })
+    //         }
+    //     );
 
-        //     const result = await response.json();
+    //     const result = await response.json();
 
-        //     if (response.ok) {
+    //     if (response.ok) {
 
-        //         setMessages((prev) => [
-        //             ...prev,
-        //             result
-        //         ]);
+    //         setMessages((prev) => [
+    //             ...prev,
+    //             result
+    //         ]);
 
-        //         setMessageInput("");
+    //         setMessageInput("");
 
-        //     } else {
+    //     } else {
 
-        //         handleResponseError(response)
-        //     }
+    //         handleResponseError(response)
+    //     }
 
-        // } catch (error) {
+    // } catch (error) {
 
-        //     toast.error(error.message);
-        // }
+    //     toast.error(error.message);
+    // }
     useEffect(() => {
 
         if (!joined) return;
 
+        const backendUrl =
+            import.meta.env.VITE_API_URL;
+
+        const wsUrl =
+            backendUrl
+                .replace("https://", "wss://")
+                .replace("http://", "ws://");
+
         const ws = new WebSocket(
 
-            `ws://localhost:8000/ws/chat/${roomId}/`
+            `${wsUrl}/ws/chat/${roomId}/`
         );
 
         ws.onopen = () => {

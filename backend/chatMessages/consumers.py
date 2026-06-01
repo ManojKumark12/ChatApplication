@@ -15,9 +15,7 @@ from chatRooms.models import ChatRoom
 from Users.models import User
 
 
-class ChatConsumer(
-    AsyncWebsocketConsumer
-):
+class ChatConsumer(AsyncWebsocketConsumer):
 
     async def connect(self):
 
@@ -42,10 +40,7 @@ class ChatConsumer(
             f"CONNECTED TO ROOM {self.room_id}"
         )
 
-    async def disconnect(
-        self,
-        close_code
-    ):
+    async def disconnect(self,close_code):
 
         await self.channel_layer.group_discard(
 
@@ -58,10 +53,7 @@ class ChatConsumer(
             f"DISCONNECTED FROM ROOM {self.room_id}"
         )
 
-    async def receive(
-        self,
-        text_data
-    ):
+    async def receive(self,text_data):
 
         data = json.loads(text_data)
 
@@ -117,10 +109,7 @@ class ChatConsumer(
             }
         )
 
-    async def chat_message(
-        self,
-        event
-    ):
+    async def chat_message(self,event):
 
         await self.send(
             text_data=json.dumps({
@@ -146,12 +135,7 @@ class ChatConsumer(
         )
 
     @database_sync_to_async
-    def save_message(
-        self,
-        sender_id,
-        room_id,
-        message
-    ):
+    def save_message(self,sender_id,room_id,message):
 
         sender = User.objects.get(
             id=sender_id

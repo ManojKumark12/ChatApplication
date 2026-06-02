@@ -28,9 +28,11 @@ SECRET_KEY = 'django-insecure-v6r)*%)k(cd@=%bs(%8t#77yej+%iq#jcpq&b+mgrs+1+m+r$o
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [    "chatapplication-6hrt.onrender.com"]
 
-
+ALLOWED_HOSTS = os.getenv(
+    "ALLOWED_HOSTS",
+    ""
+).split(",")
 # Application definition
 
 INSTALLED_APPS = [
@@ -129,12 +131,15 @@ USE_I18N = True
 
 USE_TZ = True
 
-CORS_ALLOWED_ORIGINS = [
+CORS_ALLOWED_ORIGINS = os.getenv(
+    "CORS_ALLOWED_ORIGINS",
     "http://localhost:5173"
-]
-CSRF_TRUSTED_ORIGINS = [
+).split(",")
+
+CSRF_TRUSTED_ORIGINS = os.getenv(
+    "CSRF_TRUSTED_ORIGINS",
     "http://localhost:5173"
-]
+).split(",")
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 

@@ -33,15 +33,15 @@ def Login(request):
             key="access",
             value=str(access),
             httponly=True,
-            secure=False,   # True in production (HTTPS)
-            samesite="Lax"
+            secure=True,   # True in production (HTTPS)
+            samesite="None"
                 )
         response.set_cookie(
                     key="refresh",
                     value=str(refresh),
                     httponly=True,
-                    secure=False,   # True in production (HTTPS)
-                    samesite="Lax"
+                    secure=True,   # True in production (HTTPS)
+                    samesite="None"
                 )
         print('success')
         return response
@@ -68,15 +68,15 @@ class Signup(APIView):
                 key="access",
                 value=str(access),
                 httponly=True,
-                secure=False,   # True in production (HTTPS)
-                samesite="Lax"
+                secure=True,   # True in production (HTTPS)
+                samesite="None"
                     )
             response.set_cookie(
                         key="refresh",
                         value=str(refresh),
                         httponly=True,
-                        secure=False,   # True in production (HTTPS)
-                        samesite="Lax"
+                        secure=True,   # True in production (HTTPS)
+                        samesite="None"
                     )
             return response
         # print(serializer.errors)

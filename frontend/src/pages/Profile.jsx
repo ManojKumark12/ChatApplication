@@ -103,7 +103,7 @@ const { isloggedin } = useSelector(
 <img
     src={
         userData?.profile_photo
-            ? `${import.meta.env.VITE_API_URL}${userData.profile_photo}`
+            ? `${userData.profile_photo}`
             : "https://via.placeholder.com/160"
     }
 

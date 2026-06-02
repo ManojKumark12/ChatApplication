@@ -35,7 +35,7 @@ export const RoomOuterCard = ({
     image
         ? image.startsWith("http")
             ? image
-            : `${import.meta.env.VITE_API_URL}${image}`
+            : `${image}`
         : "https://images.unsplash.com/photo-1516321318423-f06f85e504b3"
 }
                 alt={title}

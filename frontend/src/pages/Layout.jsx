@@ -122,7 +122,7 @@ const { isloggedin, user } = useSelector(
         user?.profile_photo ? (
 
             <img
-                src={`${import.meta.env.VITE_API_URL}${user.profile_photo}`}
+                src={`${user.profile_photo}`}
 
                 alt="profile"
 

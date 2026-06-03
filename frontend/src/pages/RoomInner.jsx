@@ -1,16 +1,36 @@
 import { useParams } from "react-router-dom";
 import apiFetch from "../common/apiFetch";
 import { toast } from "react-toastify";
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useEffect, useState, useRef } from "react"; import { useSelector } from "react-redux";
 import handleResponseError from "../common/handleError";
 const RoomInner = () => {
     const [socket, setSocket] = useState(null);
     const { roomId } = useParams();
 
     const [joined, setJoined] = useState(false);
+const [isMobile, setIsMobile] =
+    useState(window.innerWidth < 768);
 
-    const [roomData, setRoomData] = useState(null);
+useEffect(() => {
+
+    const handleResize = () => {
+        setIsMobile(
+            window.innerWidth < 768
+        );
+    };
+
+    window.addEventListener(
+        "resize",
+        handleResize
+    );
+
+    return () =>
+        window.removeEventListener(
+            "resize",
+            handleResize
+        );
+
+}, []);    const [roomData, setRoomData] = useState(null);
 
     const [showMembers, setShowMembers] = useState(false);
     const [messages, setMessages] = useState([]);
@@ -18,7 +38,7 @@ const RoomInner = () => {
         (state) => state.user
     );
     const [messageInput, setMessageInput] = useState("");
-
+    const messagesEndRef = useRef(null);
     const loadRoom = async () => {
 
         try {
@@ -254,126 +274,203 @@ const RoomInner = () => {
         };
 
     }, [roomId, joined]);
+    useEffect(() => {
+
+      messagesEndRef.current?.scrollIntoView();
+
+    }, [messages]);
     return (
 
         <div
             style={{
-                minHeight: "100vh",
-                display: "flex",
+                height: "100dvh",
+                overflow: "hidden", display: "flex",
+                flexDirection: isMobile ? "column" : "row",
                 background: "#f4f7fb"
             }}
         >
 
             {/* LEFT ROOM INFO */}
-            <div
-                style={{
-                    width: "320px",
-                    padding: "25px"
-                }}
-            >
-
+            {isMobile ? (
                 <div
                     style={{
                         background: "white",
-                        padding: "30px",
-                        borderRadius: "18px",
-                        boxShadow: "0 4px 18px rgba(0,0,0,0.08)"
+                        padding: "10px 15px",
+                        borderBottom: "1px solid #e5e7eb",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        flexShrink: 0
+                    }}
+                >
+                    <div>
+                        <div
+                            style={{
+                                fontWeight: "700",
+                                fontSize: "16px"
+                            }}
+                        >
+                            {roomData?.room_name}
+                        </div>
+
+                        <div
+                            style={{
+                                fontSize: "12px",
+                                color: "#666"
+                            }}
+                        >
+                            👥 {roomData?.total_members}
+                        </div>
+                    </div>
+
+                    <div
+                        style={{
+                            display: "flex",
+                            gap: "8px"
+                        }}
+                    >
+                        <button
+                            onClick={joinRoom}
+                            style={{
+                                padding: "8px 12px",
+                                border: "none",
+                                borderRadius: "8px",
+                                background:
+                                    joined
+                                        ? "#dc2626"
+                                        : "#4f46e5",
+                                color: "white"
+                            }}
+                        >
+                            {joined ? "Leave" : "Join"}
+                        </button>
+
+                        <button
+                            onClick={() =>
+                                setShowMembers(!showMembers)
+                            }
+                            style={{
+                                padding: "8px 12px",
+                                border: "none",
+                                borderRadius: "8px",
+                                background: "#111827",
+                                color: "white"
+                            }}
+                        >
+                            Members
+                        </button>
+                    </div>
+                </div>
+            ) : (
+                <div
+                    style={{
+                        width: "320px", padding: "25px"
                     }}
                 >
 
-                    <h1
-                        style={{
-                            marginBottom: "10px",
-                            color: "#222",
-                            fontSize: "28px"
-                        }}
-                    >
-                        {roomData?.room_name}
-                    </h1>
-
-                    <p
-                        style={{
-                            color: "#666",
-                            lineHeight: "1.6"
-                        }}
-                    >
-                        {roomData?.description}
-                    </p>
-
                     <div
                         style={{
-                            marginTop: "14px",
-                            color: "#555",
-                            fontWeight: "600"
+                            background: "white",
+                            padding: "30px",
+                            borderRadius: "18px",
+                            boxShadow: "0 4px 18px rgba(0,0,0,0.08)"
                         }}
                     >
-                        Owner: {roomData?.owner}
-                    </div>
 
-                    <div
-                        style={{
-                            marginTop: "8px",
-                            color: "#555"
-                        }}
-                    >
-                        👥 {roomData?.total_members} Members
-                    </div>
+                        <h1
+                            style={{
+                                marginBottom: "10px",
+                                color: "#222",
+                                fontSize: "28px"
+                            }}
+                        >
+                            {roomData?.room_name}
+                        </h1>
 
-                    {/* Join / Leave */}
-                    <button
-                        onClick={joinRoom}
-                        style={{
-                            marginTop: "24px",
-                            padding: "12px 22px",
-                            background:
+                        <p
+                            style={{
+                                color: "#666",
+                                lineHeight: "1.6"
+                            }}
+                        >
+                            {roomData?.description}
+                        </p>
+
+                        <div
+                            style={{
+                                marginTop: "14px",
+                                color: "#555",
+                                fontWeight: "600"
+                            }}
+                        >
+                            Owner: {roomData?.owner}
+                        </div>
+
+                        <div
+                            style={{
+                                marginTop: "8px",
+                                color: "#555"
+                            }}
+                        >
+                            👥 {roomData?.total_members} Members
+                        </div>
+
+                        {/* Join / Leave */}
+                        <button
+                            onClick={joinRoom}
+                            style={{
+                                marginTop: "24px",
+                                padding: "12px 22px",
+                                background:
+                                    joined
+                                        ? "#dc2626"
+                                        : "#4f46e5",
+
+                                color: "white",
+                                border: "none",
+                                borderRadius: "10px",
+                                cursor: "pointer",
+                                fontWeight: "600",
+                                fontSize: "15px",
+                                width: "100%"
+                            }}
+                        >
+                            {
                                 joined
-                                    ? "#dc2626"
-                                    : "#4f46e5",
+                                    ? "Leave Room"
+                                    : "Join Room"
+                            }
+                        </button>
 
-                            color: "white",
-                            border: "none",
-                            borderRadius: "10px",
-                            cursor: "pointer",
-                            fontWeight: "600",
-                            fontSize: "15px",
-                            width: "100%"
-                        }}
-                    >
-                        {
-                            joined
-                                ? "Leave Room"
-                                : "Join Room"
-                        }
-                    </button>
+                        {/* Toggle Members */}
+                        <button
+                            onClick={() => {
+                                setShowMembers(!showMembers);
+                            }}
+                            style={{
+                                marginTop: "14px",
+                                padding: "10px 18px",
+                                background: "#111827",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "10px",
+                                cursor: "pointer",
+                                fontWeight: "600",
+                                fontSize: "14px",
+                                width: "100%"
+                            }}
+                        >
+                            {
+                                showMembers
+                                    ? "Hide Members"
+                                    : "Show Members"
+                            }
+                        </button>
 
-                    {/* Toggle Members */}
-                    <button
-                        onClick={() => {
-                            setShowMembers(!showMembers);
-                        }}
-                        style={{
-                            marginTop: "14px",
-                            padding: "10px 18px",
-                            background: "#111827",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "10px",
-                            cursor: "pointer",
-                            fontWeight: "600",
-                            fontSize: "14px",
-                            width: "100%"
-                        }}
-                    >
-                        {
-                            showMembers
-                                ? "Hide Members"
-                                : "Show Members"
-                        }
-                    </button>
+                    </div>
 
-                </div>
+                </div>)}
 
-            </div>
 
             {/* CENTER CHAT AREA */}
             <div
@@ -381,7 +478,9 @@ const RoomInner = () => {
                     flex: 1,
                     display: "flex",
                     flexDirection: "column",
-                    padding: "25px"
+                    padding: "25px",
+                    minHeight: 0,
+                    overflow: "hidden"
                 }}
             >
 
@@ -403,17 +502,18 @@ const RoomInner = () => {
 
                 {/* Messages */}
                 <div
-                    style={{
-                        flex: 1,
-                        background: "white",
-                        borderRadius: "18px",
-                        padding: "24px",
-                        overflowY: "auto",
-                        boxShadow: "0 4px 18px rgba(0,0,0,0.06)",
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "18px"
-                    }}
+             style={{
+    flex: 1,
+    minHeight: 0,
+    overflowY: "auto",
+    overflowX: "hidden",
+    background: "white",
+    borderRadius: isMobile ? "0" : "18px",
+    padding: isMobile ? "12px" : "24px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "18px"
+}}
                 >
 
                     {/* Fake Messages */}
@@ -450,8 +550,7 @@ const RoomInner = () => {
 
                                             borderRadius: "14px",
 
-                                            maxWidth: "60%",
-
+                                            maxWidth: isMobile ? "85%" : "60%",
                                             minWidth: "120px"
                                         }}
                                     >
@@ -532,6 +631,7 @@ const RoomInner = () => {
                             );
                         })
                     }
+                    <div ref={messagesEndRef}></div>
                 </div>
 
                 {/* Input Area */}
@@ -539,7 +639,8 @@ const RoomInner = () => {
                     style={{
                         marginTop: "20px",
                         display: "flex",
-                        gap: "12px"
+                        gap: "12px",
+                        flexWrap: "wrap"
                     }}
                 >
 
@@ -581,7 +682,8 @@ const RoomInner = () => {
                             border: "none",
                             borderRadius: "12px",
                             cursor: "pointer",
-                            fontWeight: "600"
+                            fontWeight: "600",
+                            width: isMobile ? "100%" : "auto"
                         }}
                     >
                         Send
@@ -590,152 +692,278 @@ const RoomInner = () => {
                 </div>
 
             </div>
+            {
+    isMobile && showMembers && (
 
-            {/* RIGHT MEMBERS SIDEBAR */}
-            <div
+        <div
+            style={{
+                position: "fixed",
+                top: 0,
+                right: 0,
+                width: "85%",
+                height: "100dvh",
+                background: "white",
+                zIndex: 9999,
+                overflowY: "auto",
+                boxShadow: "-4px 0 20px rgba(0,0,0,0.15)",
+                padding: "20px"
+            }}
+        >
+
+            <button
+                onClick={() => setShowMembers(false)}
                 style={{
-                    width: showMembers ? "320px" : "0px",
-                    background: "white",
-                    height: "100vh",
-                    overflow: "hidden",
-                    transition: "0.3s",
-                    boxShadow:
-                        showMembers
-                            ? "-4px 0 12px rgba(0,0,0,0.08)"
-                            : "none"
+                    border: "none",
+                    background: "#dc2626",
+                    color: "white",
+                    padding: "10px 14px",
+                    borderRadius: "8px",
+                    marginBottom: "20px"
                 }}
             >
+                Close
+            </button>
 
-                {
-                    showMembers && (
+            <h2
+                style={{
+                    marginTop: 0,
+                    marginBottom: "20px"
+                }}
+            >
+                Members
+            </h2>
 
-                        <div
-                            style={{
-                                padding: "24px",
-                                height: "100%",
-                                overflowY: "auto"
-                            }}
-                        >
+            {
+                roomData?.members?.map((member) => (
 
-                            <h2
+                    <div
+                        key={member.id}
+                        style={{
+                            padding: "12px",
+                            border: "1px solid #e5e7eb",
+                            borderRadius: "12px",
+                            marginBottom: "10px",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "12px"
+                        }}
+                    >
+
+                        {
+                            member.profile_photo ? (
+
+                                <img
+                                    src={member.profile_photo}
+                                    alt={member.username}
+                                    style={{
+                                        width: "45px",
+                                        height: "45px",
+                                        borderRadius: "50%",
+                                        objectFit: "cover"
+                                    }}
+                                />
+
+                            ) : (
+
+                                <div
+                                    style={{
+                                        width: "45px",
+                                        height: "45px",
+                                        borderRadius: "50%",
+                                        background: "#4f46e5",
+                                        color: "white",
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        fontWeight: "700"
+                                    }}
+                                >
+                                    {member.username?.[0]?.toUpperCase()}
+                                </div>
+
+                            )
+                        }
+
+                        <div>
+                            <div
                                 style={{
-                                    marginTop: 0,
-                                    marginBottom: "20px",
-                                    color: "#222"
+                                    fontWeight: "700"
                                 }}
                             >
-                                Members
-                            </h2>
-                            {
-                                roomData?.members?.map((member) => (
+                                {member.username}
+                            </div>
 
-                                    <div
-                                        key={member.id}
-                                        style={{
-                                            padding: "12px 14px",
-                                            borderRadius: "14px",
-                                            background: "#f8fafc",
-                                            marginBottom: "12px",
-                                            border: "1px solid #e5e7eb",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            gap: "12px",
-                                            width: "100%",
-                                            boxSizing: "border-box"
-                                        }}
-                                    >
-
-                                        {/* Profile Image */}
-                                        {
-                                            member.profile_photo ? (
-
-                                                <img
-                                                    src={`${member.profile_photo}`}
-
-                                                    alt={member.username}
-
-                                                    style={{
-                                                        width: "48px",
-                                                        height: "48px",
-                                                        borderRadius: "50%",
-                                                        objectFit: "cover",
-                                                        flexShrink: 0
-                                                    }}
-                                                />
-
-                                            ) : (
-
-                                                <div
-                                                    style={{
-                                                        width: "48px",
-                                                        height: "48px",
-                                                        borderRadius: "50%",
-                                                        background: "#4f46e5",
-                                                        color: "white",
-                                                        display: "flex",
-                                                        justifyContent: "center",
-                                                        alignItems: "center",
-                                                        fontWeight: "700",
-                                                        fontSize: "17px",
-                                                        flexShrink: 0
-                                                    }}
-                                                >
-                                                    {
-                                                        member.username
-                                                            ?.charAt(0)
-                                                            ?.toUpperCase()
-                                                    }
-                                                </div>
-
-                                            )
-                                        }
-
-                                        {/* Text */}
-                                        <div
-                                            style={{
-                                                overflow: "hidden"
-                                            }}
-                                        >
-
-                                            <div
-                                                style={{
-                                                    fontWeight: "700",
-                                                    color: "#222",
-                                                    fontSize: "15px",
-                                                    whiteSpace: "nowrap",
-                                                    overflow: "hidden",
-                                                    textOverflow: "ellipsis"
-                                                }}
-                                            >
-                                                {member.username}
-                                            </div>
-
-                                            <div
-                                                style={{
-                                                    fontSize: "12px",
-                                                    color: "#666",
-                                                    marginTop: "3px",
-                                                    whiteSpace: "nowrap",
-                                                    overflow: "hidden",
-                                                    textOverflow: "ellipsis"
-                                                }}
-                                            >
-                                                {member.email}
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-
-                                ))
-                            }
-
+                            <div
+                                style={{
+                                    fontSize: "12px",
+                                    color: "#666"
+                                }}
+                            >
+                                {member.email}
+                            </div>
                         </div>
 
-                    )
-                }
+                    </div>
 
-            </div>
+                ))
+            }
+
+        </div>
+
+    )
+}
+
+            {/* RIGHT MEMBERS SIDEBAR */}
+            {
+                !isMobile && (
+                    <div
+                        style={{
+                            width:
+                                showMembers
+                                    ? "320px"
+                                    : "0px",
+                            background: "white",
+                            height: "100dvh",
+                            overflow: "hidden",
+                            transition: "0.3s",
+                            boxShadow:
+                                showMembers
+                                    ? "-4px 0 12px rgba(0,0,0,0.08)"
+                                    : "none"
+                        }}
+                    >
+
+                        {
+                            showMembers && (
+
+                                <div
+                                    style={{
+                                        padding: "24px",
+                                        height: "100%",
+                                        overflowY: "auto"
+                                    }}
+                                >
+
+                                    <h2
+                                        style={{
+                                            marginTop: 0,
+                                            marginBottom: "20px",
+                                            color: "#222"
+                                        }}
+                                    >
+                                        Members
+                                    </h2>
+                                    {
+                                        roomData?.members?.map((member) => (
+
+                                            <div
+                                                key={member.id}
+                                                style={{
+                                                    padding: "12px 14px",
+                                                    borderRadius: "14px",
+                                                    background: "#f8fafc",
+                                                    marginBottom: "12px",
+                                                    border: "1px solid #e5e7eb",
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    gap: "12px",
+                                                    width: "100%",
+                                                    boxSizing: "border-box"
+                                                }}
+                                            >
+
+                                                {/* Profile Image */}
+                                                {
+                                                    member.profile_photo ? (
+
+                                                        <img
+                                                            src={`${member.profile_photo}`}
+
+                                                            alt={member.username}
+
+                                                            style={{
+                                                                width: "48px",
+                                                                height: "48px",
+                                                                borderRadius: "50%",
+                                                                objectFit: "cover",
+                                                                flexShrink: 0
+                                                            }}
+                                                        />
+
+                                                    ) : (
+
+                                                        <div
+                                                            style={{
+                                                                width: "48px",
+                                                                height: "48px",
+                                                                borderRadius: "50%",
+                                                                background: "#4f46e5",
+                                                                color: "white",
+                                                                display: "flex",
+                                                                justifyContent: "center",
+                                                                alignItems: "center",
+                                                                fontWeight: "700",
+                                                                fontSize: "17px",
+                                                                flexShrink: 0
+                                                            }}
+                                                        >
+                                                            {
+                                                                member.username
+                                                                    ?.charAt(0)
+                                                                    ?.toUpperCase()
+                                                            }
+                                                        </div>
+
+                                                    )
+                                                }
+
+                                                {/* Text */}
+                                                <div
+                                                    style={{
+                                                        overflow: "hidden"
+                                                    }}
+                                                >
+
+                                                    <div
+                                                        style={{
+                                                            fontWeight: "700",
+                                                            color: "#222",
+                                                            fontSize: "15px",
+                                                            whiteSpace: "nowrap",
+                                                            overflow: "hidden",
+                                                            textOverflow: "ellipsis"
+                                                        }}
+                                                    >
+                                                        {member.username}
+                                                    </div>
+
+                                                    <div
+                                                        style={{
+                                                            fontSize: "12px",
+                                                            color: "#666",
+                                                            marginTop: "3px",
+                                                            whiteSpace: "nowrap",
+                                                            overflow: "hidden",
+                                                            textOverflow: "ellipsis"
+                                                        }}
+                                                    >
+                                                        {member.email}
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+
+                                        ))
+                                    }
+
+                                </div>
+
+                            )
+                        }
+
+                    </div>)
+            }
 
         </div>
     );

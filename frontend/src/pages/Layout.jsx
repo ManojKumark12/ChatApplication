@@ -5,49 +5,49 @@ import { Link } from "react-router-dom";
 import apiFetch from "../common/apiFetch";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
-import { logoutfunc,loginfunc } from "../redux/User.slice";
+import { logoutfunc, loginfunc } from "../redux/User.slice";
 const Layout = () => {
-    
+
     const location = useLocation();
     const swap_location_path = location.pathname === "/" ? "/personal-chats" : "/"
     const navigate = useNavigate();
     const [menuOpen, setMenuOpen] = useState(false);
     const avatarRef = useRef(null);
 
-const dispatch = useDispatch();
-useEffect(() => {
+    const dispatch = useDispatch();
+    useEffect(() => {
 
-    const loadUser = async () => {
+        const loadUser = async () => {
 
-        try {
+            try {
 
-            const response = await apiFetch(
-                `${import.meta.env.VITE_API_URL}/user/profile/`,
-                {
-                    method: "GET",
-                    credentials: "include"
+                const response = await apiFetch(
+                    `${import.meta.env.VITE_API_URL}/user/profile/`,
+                    {
+                        method: "GET",
+                        credentials: "include"
+                    }
+                );
+
+                if (response.ok) {
+
+                    const result = await response.json();
+
+                    dispatch(loginfunc(result));
                 }
-            );
 
-            if (response.ok) {
+            } catch (error) {
 
-                const result = await response.json();
-
-                dispatch(loginfunc(result));
+                console.log(error);
             }
+        };
 
-        } catch (error) {
+        loadUser();
 
-            console.log(error);
-        }
-    };
-
-    loadUser();
-
-}, []);
-const { isloggedin, user } = useSelector(
-    (state) => state.user
-);
+    }, []);
+    const { isloggedin, user } = useSelector(
+        (state) => state.user
+    );
 
     // close dropdown when clicking outside
     useEffect(() => {
@@ -72,7 +72,7 @@ const { isloggedin, user } = useSelector(
         if (response.ok) {
             dispatch(logoutfunc());
             toast.success("Loggged out successfully!");
-                navigate("/");
+            navigate("/");
             // navigateTo(navigate, '/login')
 
         }
@@ -82,7 +82,7 @@ const { isloggedin, user } = useSelector(
         }
     }
     return (
-        
+
         <div className="app-viewport">
             <nav className="top-nav">
 
@@ -95,73 +95,78 @@ const { isloggedin, user } = useSelector(
                     />
                 </div>
 
-                <div className="nav-actions" style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+                <div className="nav-actions" style={{
+                    display: "flex",
+                    gap: "10px",
+                    alignItems: "center",
+                    flexWrap: "wrap"
+                }}>
                     <button className="swap-btn" onClick={() => navigateTo(navigate, swap_location_path)}>
                         {location.pathname === "/" ? "Personal Chats" : "Public Rooms"}
                     </button>
 
                     <div ref={avatarRef} className="avatar-container">
 
-                      <div
-    onClick={() => setMenuOpen(!menuOpen)}
-    style={{
-        width: "45px",
-        height: "45px",
-        borderRadius: "50%",
-        overflow: "hidden",
-        cursor: "pointer",
-        border: "2px solid #4f46e5",
-        background: "#e5e7eb",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center"
-    }}
->
+                        <div
+                            onClick={() => setMenuOpen(!menuOpen)}
+                            style={{
+                                width: "45px",
+                                height: "45px",
+                                borderRadius: "50%",
+                                overflow: "hidden",
+                                cursor: "pointer",
+                                border: "2px solid #4f46e5",
+                                background: "#e5e7eb",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center"
+                            }}
+                        >
 
-    {
-        user?.profile_photo ? (
+                            {
+                                user?.profile_photo ? (
 
-            <img
-                src={`${user.profile_photo}`}
+                                    <img
+                                        src={`${user.profile_photo}`}
 
-                alt="profile"
+                                        alt="profile"
 
-                style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover"
-                }}
-            />
+                                        style={{
+                                            width: "100%",
+                                            height: "100%",
+                                            objectFit: "cover"
+                                        }}
+                                    />
 
-        ) : (
+                                ) : (
 
-            <span
-                style={{
-                    fontWeight: "700",
-                    color: "#4f46e5",
-                    fontSize: "18px"
-                }}
-            >
-                {
-                    user?.username
-                        ?.charAt(0)
-                        ?.toUpperCase()
-                }
-            </span>
+                                    <span
+                                        style={{
+                                            fontWeight: "700",
+                                            color: "#4f46e5",
+                                            fontSize: "18px"
+                                        }}
+                                    >
+                                        {
+                                            user?.username
+                                                ?.charAt(0)
+                                                ?.toUpperCase()
+                                        }
+                                    </span>
 
-        )
-    }
+                                )
+                            }
 
-</div>
+                        </div>
 
                         {menuOpen && (
                             <div className="avatar-dropdown">
                                 <Link to="/profile">
-                                <button className="dropdown-item">Profile</button>
+                                    <button className="dropdown-item">Profile</button>
                                 </Link>
-                             {!isloggedin &&  <Link to='/login'><button className="dropdown-item">Login</button></Link>}
-                               
-                               {isloggedin && <button className="dropdown-item" onClick={logout}>Logout</button>}
+                                {!isloggedin && <Link to='/login'><button className="dropdown-item">Login</button></Link>}
+
+                                {isloggedin && <button className="dropdown-item" onClick={logout}>Logout</button>}
                             </div>
                         )}
 

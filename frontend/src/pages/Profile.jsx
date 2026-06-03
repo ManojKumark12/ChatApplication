@@ -7,9 +7,9 @@ const Profile = () => {
 
     const [userData, setUserData] = useState(null);
     const [activeTab, setActiveTab] = useState("joined");
-const { isloggedin } = useSelector(
-    (state) => state.user
-);
+    const { isloggedin } = useSelector(
+        (state) => state.user
+    );
     const loadProfile = async () => {
 
         try {
@@ -23,12 +23,12 @@ const { isloggedin } = useSelector(
             );
 
             const result = await response.json();
-// console.log(result);
+            // console.log(result);
             setUserData(result);
 
         } catch (error) {
 
-        toast.error("Unable to load profile");
+            toast.error("Unable to load profile");
         }
     };
 
@@ -44,7 +44,7 @@ const { isloggedin } = useSelector(
             style={{
                 minHeight: "100vh",
                 background: "#eef2ff",
-                padding: "30px"
+                padding: "clamp(12px,4vw,30px)"
             }}
         >
 
@@ -97,37 +97,44 @@ const { isloggedin } = useSelector(
                                 style={{
                                     display: "flex",
                                     gap: "24px",
-                                    alignItems: "center"
+                                    alignItems: "center",
+                                    flexWrap: "wrap"
                                 }}
                             >
-<img
-    src={
-        userData?.profile_photo
-            ? `${userData.profile_photo}`
-            : "https://via.placeholder.com/160"
-    }
+                                <img
+                                    src={
+                                        userData?.profile_photo
+                                            ? `${userData.profile_photo}`
+                                            : "https://via.placeholder.com/160"
+                                    }
 
-    alt="profile"
+                                    alt="profile"
 
-    style={{
-        width: "160px",
-        height: "160px",
-        borderRadius: "50%",
-        objectFit: "cover",
-        border: "6px solid white",
-        boxShadow:
-            "0 6px 18px rgba(0,0,0,0.15)"
-    }}
-/>
+                                    style={{
+                                        width: "min(160px,35vw)",
+                                        height: "min(160px,35vw)",
+                                        borderRadius: "50%",
+                                        objectFit: "cover",
+                                        border: "6px solid white",
+                                        boxShadow:
+                                            "0 6px 18px rgba(0,0,0,0.15)"
+                                    }}
+                                />
 
                                 {/* Details */}
-                                <div>
+                                <div
+                                    style={{
+                                        minWidth: 0,
+                                        flex: 1
+                                    }}
+                                >
 
                                     <h1
                                         style={{
                                             margin: 0,
-                                            fontSize: "42px",
-                                            color: "#111827"
+                                            fontSize: "clamp(24px,6vw,42px)",
+                                            color: "#111827",
+                                            wordBreak: "break-word"
                                         }}
                                     >
                                         {userData?.username}
@@ -155,14 +162,14 @@ const { isloggedin } = useSelector(
                                         <div style={badgeStyle}>
                                             📍 {
                                                 userData?.city
-                                                    || "No City"
+                                                || "No City"
                                             }
                                         </div>
 
                                         <div style={badgeStyle}>
                                             📞 {
                                                 userData?.phone
-                                                    || "No Phone"
+                                                || "No Phone"
                                             }
                                         </div>
 
@@ -174,33 +181,33 @@ const { isloggedin } = useSelector(
 
                             {/* RIGHT STATS */}
                             <div
-    style={{
-        display: "flex",
-        justifyContent: "center",
-        marginTop: "18px"
-    }}
->
-{isloggedin &&
-    <button
-        onClick={() => {
-            window.location.href = "/edit-profile";
-        }}
+                                style={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    marginTop: "18px"
+                                }}
+                            >
+                                {isloggedin &&
+                                    <button
+                                        onClick={() => {
+                                            window.location.href = "/edit-profile";
+                                        }}
 
-        style={{
-            padding: "12px 22px",
-            background: "#111827",
-            color: "white",
-            border: "none",
-            borderRadius: "12px",
-            cursor: "pointer",
-            fontWeight: "700",
-            fontSize: "15px"
-        }}
-    >
-        Edit Profile
-    </button>
-}
-</div>
+                                        style={{
+                                            padding: "12px 22px",
+                                            background: "#111827",
+                                            color: "white",
+                                            border: "none",
+                                            borderRadius: "12px",
+                                            cursor: "pointer",
+                                            fontWeight: "700",
+                                            fontSize: "15px"
+                                        }}
+                                    >
+                                        Edit Profile
+                                    </button>
+                                }
+                            </div>
                             <div
                                 style={{
                                     display: "flex",
@@ -273,7 +280,7 @@ const { isloggedin } = useSelector(
                             >
                                 {
                                     userData?.bio
-                                        || "No bio available"
+                                    || "No bio available"
                                 }
                             </div>
 
@@ -402,8 +409,7 @@ const statsCardStyle = {
     background: "white",
     padding: "22px",
     borderRadius: "18px",
-    minWidth: "180px",
-    textAlign: "center",
+    minWidth: "140px", textAlign: "center",
     boxShadow: "0 4px 14px rgba(0,0,0,0.06)"
 };
 

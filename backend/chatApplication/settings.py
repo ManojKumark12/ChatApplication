@@ -31,7 +31,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = os.getenv(
     "ALLOWED_HOSTS",
-    ""
+    "localhost"
 ).split(",")
 # Application definition
 

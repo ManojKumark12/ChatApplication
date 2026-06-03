@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 // useNavigate
 const EditProfile = () => {
-const navigate_=useNavigate();
+    const navigate_ = useNavigate();
     const [formData, setFormData] = useState({
         username: "",
         email: "",
@@ -131,25 +131,25 @@ const navigate_=useNavigate();
                 }
             );
 
-        if (response.ok) {
+            if (response.ok) {
 
-    setErrors({});
+                setErrors({});
 
-    toast.success(
-        "Profile updated successfully"
-    );
-    navigate_('/profile');
+                toast.success(
+                    "Profile updated successfully"
+                );
+                navigate_('/profile');
 
-} else {
+            } else {
 
-    const errorData = await response.json();
+                const errorData = await response.json();
 
-    setErrors(errorData);
+                setErrors(errorData);
 
-    toast.error(
-        "Please fix the errors"
-    );
-}
+                toast.error(
+                    "Please fix the errors"
+                );
+            }
 
         } catch (error) {
 
@@ -163,7 +163,7 @@ const navigate_=useNavigate();
             style={{
                 minHeight: "100vh",
                 background: "#eef2ff",
-                padding: "40px"
+                padding: "clamp(12px,4vw,40px)"
             }}
         >
 
@@ -172,7 +172,7 @@ const navigate_=useNavigate();
                     maxWidth: "700px",
                     margin: "auto",
                     background: "white",
-                    padding: "40px",
+                    padding: "clamp(12px,4vw,40px)",
                     borderRadius: "24px",
                     boxShadow:
                         "0 10px 30px rgba(0,0,0,0.08)"
@@ -194,7 +194,8 @@ const navigate_=useNavigate();
                     style={{
                         display: "flex",
                         flexDirection: "column",
-                        gap: "20px"
+                        gap: "20px",
+                        boxSizing: "border-box"
                     }}
                 >
 
@@ -324,11 +325,13 @@ const navigate_=useNavigate();
                                 alt="preview"
 
                                 style={{
-                                    width: "120px",
-                                    height: "120px",
+                                    // width: "120px",
+                                    // height: "120px",
                                     borderRadius: "50%",
                                     objectFit: "cover",
-                                    marginBottom: "10px"
+                                    marginBottom: "10px",
+                                    width: "min(120px,30vw)",
+                                    height: "min(120px,30vw)"
                                 }}
                             />
                         )

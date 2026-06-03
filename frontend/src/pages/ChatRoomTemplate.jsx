@@ -6,7 +6,7 @@ import handleResponseError from "../common/handleError";
 // import { navigateTo } from "../common/helper_functions";
 // useNavigate
 const ChatRoomTemplate = () => {
-const navigate=useNavigate()
+    const navigate = useNavigate()
     const [formData, setFormData] = useState({
         room_name: "",
         description: "",
@@ -65,7 +65,8 @@ const navigate=useNavigate()
 
                 setErrors(responseData);
 
-    handleResponseError(response);            }
+                handleResponseError(response);
+            }
             else {
 
                 setErrors({});
@@ -91,7 +92,7 @@ const navigate=useNavigate()
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                padding: "30px"
+                padding: "clamp(12px,4vw,30px)"
             }}
         >
 
@@ -101,14 +102,15 @@ const navigate=useNavigate()
                     maxWidth: "550px",
                     backgroundColor: "white",
                     borderRadius: "12px",
-                    padding: "30px",
+                    padding: "clamp(16px,4vw,30px)",
                     boxShadow: "0 4px 15px rgba(0,0,0,0.08)"
                 }}
             >
 
                 <h2
                     style={{
-                        marginBottom: "20px"
+                        marginBottom: "20px",
+                        fontSize: "clamp(22px,5vw,32px)"
                     }}
                 >
                     Create Chat Room

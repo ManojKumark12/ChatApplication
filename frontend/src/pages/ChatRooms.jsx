@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { RoomOuterCard } from "./RoomOuterCard";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import apiFetch from "../common/apiFetch";
 
 const ChatRooms = () => {
@@ -21,11 +21,12 @@ const ChatRooms = () => {
 
             const result = await response.json();
 
-setChatRoomsData(
-    Array.isArray(result)
-        ? result
-        : []
-);
+            setChatRoomsData(
+                Array.isArray(result)
+                    ? result
+                    : []
+            );
+
         } catch (error) {
 
             console.log(error);
@@ -44,7 +45,7 @@ setChatRoomsData(
             style={{
                 minHeight: "100vh",
                 background: "#f4f7fb",
-                padding: "40px"
+                padding: "20px"
             }}
         >
 
@@ -54,7 +55,9 @@ setChatRoomsData(
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    marginBottom: "35px"
+                    flexWrap: "wrap",
+                    gap: "16px",
+                    marginBottom: "30px"
                 }}
             >
 
@@ -73,8 +76,7 @@ setChatRoomsData(
                     <p
                         style={{
                             marginTop: "8px",
-                            color: "#666",
-                            fontSize: "15px"
+                            color: "#666"
                         }}
                     >
                         Join communities and start chatting
@@ -82,7 +84,12 @@ setChatRoomsData(
 
                 </div>
 
-                <Link to="/chatRoomTemplate">
+                <Link
+                    to="/chatRoomTemplate"
+                    style={{
+                        textDecoration: "none"
+                    }}
+                >
 
                     <button
                         style={{
@@ -94,7 +101,8 @@ setChatRoomsData(
                             cursor: "pointer",
                             fontWeight: "600",
                             fontSize: "15px",
-                            boxShadow: "0 4px 12px rgba(79,70,229,0.25)"
+                            boxShadow:
+                                "0 4px 12px rgba(79,70,229,0.25)"
                         }}
                     >
                         + Create Room
@@ -104,29 +112,39 @@ setChatRoomsData(
 
             </div>
 
-            {/* Rooms Grid */}
+            {/* Rooms */}
             <div
                 style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))",
-                    gap: "24px"
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: "24px",
+                    justifyContent: "center"
                 }}
             >
 
                 {
                     ChatRoomsData.map((room) => (
 
-                        <RoomOuterCard
+                        <div
                             key={room.id}
-                            roomId={room.id}
-                            title={room.room_name}
-                            total={room.total_members}
-                            type={room.room_type}
-                            image={room.room_image}
-                            owner={room.owner}
-                            description={room.description}
+                            style={{
+                                width: "320px",
+                                maxWidth: "100%"
+                            }}
+                        >
+
+                            <RoomOuterCard
+                                roomId={room.id}
+                                title={room.room_name}
+                                total={room.total_members}
+                                type={room.room_type}
+                                image={room.room_image}
+                                owner={room.owner}
+                                description={room.description}
                                 members={room.members}
-                        />
+                            />
+
+                        </div>
 
                     ))
                 }

@@ -8,29 +8,29 @@ const RoomInner = () => {
     const { roomId } = useParams();
 
     const [joined, setJoined] = useState(false);
-const [isMobile, setIsMobile] =
-    useState(window.innerWidth < 768);
+    const [isMobile, setIsMobile] =
+        useState(window.innerWidth < 768);
 
-useEffect(() => {
+    useEffect(() => {
 
-    const handleResize = () => {
-        setIsMobile(
-            window.innerWidth < 768
-        );
-    };
+        const handleResize = () => {
+            setIsMobile(
+                window.innerWidth < 768
+            );
+        };
 
-    window.addEventListener(
-        "resize",
-        handleResize
-    );
-
-    return () =>
-        window.removeEventListener(
+        window.addEventListener(
             "resize",
             handleResize
         );
 
-}, []);    const [roomData, setRoomData] = useState(null);
+        return () =>
+            window.removeEventListener(
+                "resize",
+                handleResize
+            );
+
+    }, []); const [roomData, setRoomData] = useState(null);
 
     const [showMembers, setShowMembers] = useState(false);
     const [messages, setMessages] = useState([]);
@@ -276,7 +276,7 @@ useEffect(() => {
     }, [roomId, joined]);
     useEffect(() => {
 
-      messagesEndRef.current?.scrollIntoView();
+        messagesEndRef.current?.scrollIntoView();
 
     }, [messages]);
     return (
@@ -502,18 +502,18 @@ useEffect(() => {
 
                 {/* Messages */}
                 <div
-             style={{
-    flex: 1,
-    minHeight: 0,
-    overflowY: "auto",
-    overflowX: "hidden",
-    background: "white",
-    borderRadius: isMobile ? "0" : "18px",
-    padding: isMobile ? "12px" : "24px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "18px"
-}}
+                    style={{
+                        flex: 1,
+                        minHeight: 0,
+                        overflowY: "auto",
+                        overflowX: "hidden",
+                        background: "white",
+                        borderRadius: isMobile ? "0" : "18px",
+                        padding: isMobile ? "12px" : "24px",
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "18px"
+                    }}
                 >
 
                     {/* Fake Messages */}
@@ -568,7 +568,11 @@ useEffect(() => {
                                                 message.sender_photo ? (
 
                                                     <img
-                                                        src={`${import.meta.env.VITE_API_URL}${message.sender_photo}`}
+                                                        src={
+                                                            message?.sender_photo
+                                                                ? `${message.sender_photo}`
+                                                                : "https://via.placeholder.com/160"
+                                                        }
 
                                                         alt={message.sender_name}
 
@@ -693,125 +697,125 @@ useEffect(() => {
 
             </div>
             {
-    isMobile && showMembers && (
-
-        <div
-            style={{
-                position: "fixed",
-                top: 0,
-                right: 0,
-                width: "85%",
-                height: "100dvh",
-                background: "white",
-                zIndex: 9999,
-                overflowY: "auto",
-                boxShadow: "-4px 0 20px rgba(0,0,0,0.15)",
-                padding: "20px"
-            }}
-        >
-
-            <button
-                onClick={() => setShowMembers(false)}
-                style={{
-                    border: "none",
-                    background: "#dc2626",
-                    color: "white",
-                    padding: "10px 14px",
-                    borderRadius: "8px",
-                    marginBottom: "20px"
-                }}
-            >
-                Close
-            </button>
-
-            <h2
-                style={{
-                    marginTop: 0,
-                    marginBottom: "20px"
-                }}
-            >
-                Members
-            </h2>
-
-            {
-                roomData?.members?.map((member) => (
+                isMobile && showMembers && (
 
                     <div
-                        key={member.id}
                         style={{
-                            padding: "12px",
-                            border: "1px solid #e5e7eb",
-                            borderRadius: "12px",
-                            marginBottom: "10px",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "12px"
+                            position: "fixed",
+                            top: 0,
+                            right: 0,
+                            width: "85%",
+                            height: "100dvh",
+                            background: "white",
+                            zIndex: 9999,
+                            overflowY: "auto",
+                            boxShadow: "-4px 0 20px rgba(0,0,0,0.15)",
+                            padding: "20px"
                         }}
                     >
 
+                        <button
+                            onClick={() => setShowMembers(false)}
+                            style={{
+                                border: "none",
+                                background: "#dc2626",
+                                color: "white",
+                                padding: "10px 14px",
+                                borderRadius: "8px",
+                                marginBottom: "20px"
+                            }}
+                        >
+                            Close
+                        </button>
+
+                        <h2
+                            style={{
+                                marginTop: 0,
+                                marginBottom: "20px"
+                            }}
+                        >
+                            Members
+                        </h2>
+
                         {
-                            member.profile_photo ? (
-
-                                <img
-                                    src={member.profile_photo}
-                                    alt={member.username}
-                                    style={{
-                                        width: "45px",
-                                        height: "45px",
-                                        borderRadius: "50%",
-                                        objectFit: "cover"
-                                    }}
-                                />
-
-                            ) : (
+                            roomData?.members?.map((member) => (
 
                                 <div
+                                    key={member.id}
                                     style={{
-                                        width: "45px",
-                                        height: "45px",
-                                        borderRadius: "50%",
-                                        background: "#4f46e5",
-                                        color: "white",
+                                        padding: "12px",
+                                        border: "1px solid #e5e7eb",
+                                        borderRadius: "12px",
+                                        marginBottom: "10px",
                                         display: "flex",
-                                        justifyContent: "center",
                                         alignItems: "center",
-                                        fontWeight: "700"
+                                        gap: "12px"
                                     }}
                                 >
-                                    {member.username?.[0]?.toUpperCase()}
+
+                                    {
+                                        member.profile_photo ? (
+
+                                            <img
+                                                src={member.profile_photo}
+                                                alt={member.username}
+                                                style={{
+                                                    width: "45px",
+                                                    height: "45px",
+                                                    borderRadius: "50%",
+                                                    objectFit: "cover"
+                                                }}
+                                            />
+
+                                        ) : (
+
+                                            <div
+                                                style={{
+                                                    width: "45px",
+                                                    height: "45px",
+                                                    borderRadius: "50%",
+                                                    background: "#4f46e5",
+                                                    color: "white",
+                                                    display: "flex",
+                                                    justifyContent: "center",
+                                                    alignItems: "center",
+                                                    fontWeight: "700"
+                                                }}
+                                            >
+                                                {member.username?.[0]?.toUpperCase()}
+                                            </div>
+
+                                        )
+                                    }
+
+                                    <div>
+                                        <div
+                                            style={{
+                                                fontWeight: "700"
+                                            }}
+                                        >
+                                            {member.username}
+                                        </div>
+
+                                        <div
+                                            style={{
+                                                fontSize: "12px",
+                                                color: "#666"
+                                            }}
+                                        >
+                                            {member.email}
+                                        </div>
+                                    </div>
+
                                 </div>
 
-                            )
+                            ))
                         }
-
-                        <div>
-                            <div
-                                style={{
-                                    fontWeight: "700"
-                                }}
-                            >
-                                {member.username}
-                            </div>
-
-                            <div
-                                style={{
-                                    fontSize: "12px",
-                                    color: "#666"
-                                }}
-                            >
-                                {member.email}
-                            </div>
-                        </div>
 
                     </div>
 
-                ))
+                )
             }
-
-        </div>
-
-    )
-}
 
             {/* RIGHT MEMBERS SIDEBAR */}
             {

@@ -20,7 +20,9 @@ from channels.routing import (
 from channels.auth import (
     AuthMiddlewareStack
 )
-
+from Users.jwt_authentication_web_sockets import (
+    JWTAuthMiddleware
+)
 import chatMessages.routing
 
 
@@ -31,11 +33,11 @@ application = ProtocolTypeRouter({
 
     "websocket":
 
-        AuthMiddlewareStack(
+        JWTAuthMiddleware(
 
             URLRouter(
 
-                chatMessages.routing.websocket_urlpatterns
+                chatMessages.routing.websocket_urlpatterns##More routings can be added.
             )
         ),
 })

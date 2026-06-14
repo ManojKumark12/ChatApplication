@@ -73,7 +73,7 @@ CLOUDINARY_STORAGE = {
             "CLOUDINARY_API_SECRET"
         ),
 }
-ASGI_APPLICATION = "chatApplication.asgi.application"
+ASGI_APPLICATION = "chatApplication.asgi.application"###this is the entry point,when asgi server(daphne) starts,use this routing
 MIDDLEWARE = [
         'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',

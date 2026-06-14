@@ -15,7 +15,7 @@ from chatRooms.models import ChatRoom
 from Users.models import User
 
 
-class ChatConsumer(AsyncWebsocketConsumer):
+class ChatConsumer(AsyncWebsocketConsumer):  
 
     async def connect(self):
 
@@ -26,8 +26,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.room_group_name = (
             f"chat_{self.room_id}"
         )
-
-        await self.channel_layer.group_add(
+        print(self.scope["user_id"])
+        await self.channel_layer.group_add(#this is established as soon as the user opens chat room page with the help of useEffect,that too if joined in grp only
 
             self.room_group_name,
 
@@ -40,7 +40,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             f"CONNECTED TO ROOM {self.room_id}"
         )
 
-    async def disconnect(self,close_code):
+    async def disconnect(self,close_code):##this executes when room id changes or when user leaves from room or component in react changes,that is in frontend see ws.close() which was returned to react,which executes when depedencies of useeffect changes,Before running the new effect it runs ws.close()
 
         await self.channel_layer.group_discard(
 
@@ -74,12 +74,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
             message
         )
 
-        await self.channel_layer.group_send(
+        await self.channel_layer.group_send(#so this function is like a loop:self.channel_layer.group_send(,i.e each consumers channel instance is stored in the group mentioned in group_send(),so every consumer instance gets this info about message and function to execute,and then each consumer executes chat_message() separately,
 
             self.room_group_name,
 
             {
-                'type': 'chat_message',#telling to execute chat_message() function for every connection the group,then in frontend ws.onmessage() receives this
+                'type': 'chat_message',#telling to execute chat_message() function for every connection in the group,then in frontend ws.onmessage() receives this
 
                 'id':
                     saved_message.id,

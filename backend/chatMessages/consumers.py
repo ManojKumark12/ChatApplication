@@ -31,7 +31,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             self.room_group_name,
 
-            self.channel_name
+            self.channel_name    #each socket has a channel name,i.e each user has a socket connection,so each socket has channel name which is identifier of that socket,so here we are creating a group in channel layer with the id of the room(if not exists) and adding user connection to it.
         )
 
         await self.accept()
@@ -57,9 +57,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         data = json.loads(text_data)
 
-        print("MESSAGE RECEIVED")
+        # print("MESSAGE RECEIVED")
 
-        print(data)
+        # print(data)
 
         message = data['message']
 
@@ -79,7 +79,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.room_group_name,
 
             {
-                'type': 'chat_message',
+                'type': 'chat_message',#telling to execute chat_message() function for every connection the group,then in frontend ws.onmessage() receives this
 
                 'id':
                     saved_message.id,

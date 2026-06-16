@@ -7,7 +7,7 @@ from channels.generic.websocket import (
 from channels.db import (
     database_sync_to_async
 )
-
+from infrastructure.redis.users_status import set_online,set_offline, get_online_users
 from .models import Message
 
 from chatRooms.models import ChatRoom
@@ -39,6 +39,35 @@ class ChatConsumer(AsyncWebsocketConsumer):
         print(
             f"CONNECTED TO ROOM {self.room_id}"
         )
+        user_id = int(self.scope["user_id"])
+
+        set_online(user_id)
+        online_users=get_online_users()
+        await self.send(
+                text_data=json.dumps({
+
+                    "event":
+                        "users_status",
+
+                    "online_users":
+                        online_users
+                })
+            )
+        await self.channel_layer.group_send(
+
+            self.room_group_name,
+
+            {
+                "type":
+                    "status_update",
+
+                "user_id":
+                    user_id,
+
+                "status":
+                    "online"
+            }
+        )
 
     async def disconnect(self,close_code):##this executes when room id changes or when user leaves from room or component in react changes,that is in frontend see ws.close() which was returned to react,which executes when depedencies of useeffect changes,Before running the new effect it runs ws.close()
 
@@ -52,6 +81,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
         print(
             f"DISCONNECTED FROM ROOM {self.room_id}"
         )
+        user_id = int(self.scope["user_id"])
+        set_offline(user_id)
+        await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    "type":
+                        "status_update",
+
+                    "user_id":
+                        user_id,
+
+                    "status":
+                        "offline"
+                }
+            )
 
     async def receive(self,text_data):
 
@@ -153,3 +197,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             content=message
         )
+    async def status_update(self,event):
+
+            await self.send(
+                text_data=json.dumps({
+
+                    "event":
+                        "status_update",
+
+                    "user_id":
+                        event["user_id"],
+
+                    "status":
+                        event["status"]
+                })
+            )

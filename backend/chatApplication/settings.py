@@ -194,11 +194,12 @@ STORAGES = {
 }
 
 CHANNEL_LAYERS = {
-
     "default": {
-
         "BACKEND":
+            "channels_redis.core.RedisChannelLayer",
 
-            "channels.layers.InMemoryChannelLayer"
-    }
+        "CONFIG": {
+            "hosts": [("localhost", 6379)],
+        },
+    },
 }

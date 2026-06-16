@@ -6,7 +6,7 @@ import handleResponseError from "../common/handleError";
 const RoomInner = () => {
     const [socket, setSocket] = useState(null);
     const { roomId } = useParams();
-
+    const [onlineUsers, setOnlineUsers] = useState([]);
     const [joined, setJoined] = useState(false);
     const [isMobile, setIsMobile] =
         useState(window.innerWidth < 768);
@@ -247,18 +247,42 @@ const RoomInner = () => {
 
         ws.onmessage = (event) => {
 
-            const data = JSON.parse(
-                event.data
-            );
+            const data = JSON.parse(event.data);
 
-            setMessages((prev) => [
+            if (data.event === "users_status") {
 
-                ...prev,
+                setOnlineUsers(data.online_users);
 
-                data
-            ]);
+            } else if (data.event === "status_update") {
+
+                if (data.status === "online") {
+
+                    setOnlineUsers(prev => [
+
+                        ...new Set([
+                            ...prev,
+                            data.user_id
+                        ])
+                    ]);
+
+                } else {
+
+                    setOnlineUsers(prev =>
+
+                        prev.filter(
+                            id => id !== data.user_id
+                        )
+                    );
+                }
+
+            } else {
+
+                setMessages(prev => [
+                    ...prev,
+                    data
+                ]);
+            }
         };
-
         ws.onclose = () => {
 
             console.log(
@@ -938,7 +962,17 @@ const RoomInner = () => {
                                                             textOverflow: "ellipsis"
                                                         }}
                                                     >
+                                                        {/* {console.log(member.id)} */}
                                                         {member.username}
+                                                        {
+                                                            onlineUsers.includes(
+                                                                member.id
+                                                            )
+
+                                                                ? " 🟢"
+
+                                                                : " ⚫"
+                                                        }
                                                     </div>
 
                                                     <div

@@ -20,7 +20,7 @@ def Login(request):
     user=authenticate(username=user.username,password=password)
     if user:
         user_dict=UserSerializer(user).data##returns python dict
-        refresh=RefreshToken.for_user(user)
+        refresh=RefreshToken.for_user(user) #Here user id will be included inside token,we have extracted this in jwt auth web socckets.
         access=refresh.access_token
         response=Response(
             {'message':'user Logged in successfully',

@@ -1,7 +1,8 @@
 from .redis_client import redis_client
-
+from channels.db import database_sync_to_async
 
 ONLINE_USERS_KEY = "online_users"
+@database_sync_to_async
 def set_online(user_id):
 
     redis_client.sadd(
@@ -10,6 +11,7 @@ def set_online(user_id):
 
         user_id
     )
+@database_sync_to_async
 def set_offline(user_id):
 
     redis_client.srem(
@@ -18,6 +20,7 @@ def set_offline(user_id):
 
         user_id
     )
+@database_sync_to_async
 def get_online_users():
 
     return list(

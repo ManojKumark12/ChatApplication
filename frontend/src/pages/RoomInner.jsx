@@ -8,9 +8,10 @@ const RoomInner = () => {
     const { roomId } = useParams();
     const [onlineUsers, setOnlineUsers] = useState([]);
     const [joined, setJoined] = useState(false);
+    const [typingUsers, setTypingUsers] = useState([]);
     const [isMobile, setIsMobile] =
         useState(window.innerWidth < 768);
-
+    const typingTimeout = useRef(null);
     useEffect(() => {
 
         const handleResize = () => {
@@ -174,11 +175,60 @@ const RoomInner = () => {
 
                 message: messageInput,
 
-                sender_id: user.id
+                // sender_id: user.id
             })
         );
+               socket.send(
+                    JSON.stringify({
 
+                        event: "stop_typing",
+
+                        user_id: user.id,
+
+                        username: user.username
+                    }));
         setMessageInput("");
+         
+    };
+    const handleMessageChange = (e) => {
+
+        setMessageInput(e.target.value);
+
+        if (
+            socket &&
+            socket.readyState === WebSocket.OPEN
+        ) {
+
+            socket.send(
+                JSON.stringify({
+
+                    event: "typing",
+
+                    user_id: user.id,
+
+                    username: user.username
+                })
+            );
+
+            clearTimeout(
+                typingTimeout.current
+            );
+
+            typingTimeout.current = setTimeout(() => {
+                    // console.log("sending stop_typing");
+                socket.send(
+                    JSON.stringify({
+
+                        event: "stop_typing",
+
+                        user_id: user.id,
+
+                        username: user.username
+                    })
+                );
+
+            }, 1000);
+        }
     };
 
     // try {
@@ -248,8 +298,12 @@ const RoomInner = () => {
         ws.onmessage = (event) => {
 
             const data = JSON.parse(event.data);
+            if(data.event==='error'){
+                const err_message=data['message']
+                toast.error(err_message);
+            }
 
-            if (data.event === "users_status") {
+            else if (data.event === "users_status") {
 
                 setOnlineUsers(data.online_users);
 
@@ -275,7 +329,77 @@ const RoomInner = () => {
                     );
                 }
 
-            } else {
+            } else if (data.event === "members_update") {
+
+                if (data.action === "left") {
+
+                    setRoomData(prev => {
+
+                        if (!prev) return prev;
+
+                        return {
+
+                            ...prev,
+
+                            total_members: prev.total_members - 1,
+
+                            members: prev.members.filter(
+                                member => member.id !== data.user_id
+                            )
+                        };
+                    });
+
+                }
+
+                if (data.action === "joined") {
+
+                    loadRoom();
+                }
+            } else if (data.event === "typing_update") {
+
+                if (data.status === "typing") {
+
+                    setTypingUsers(prev => {
+
+                        const exists = prev.some(
+
+                            user =>
+
+                                user.user_id === data.user_id
+                        );
+
+                        if (exists) {
+
+                            return prev;
+                        }
+
+                        return [
+
+                            ...prev,
+
+                            {
+                                user_id: data.user_id,
+
+                                username: data.username
+                            }
+                        ];
+                    });
+                }
+
+                if (data.status === "stopped") {
+
+                    setTypingUsers(prev =>
+
+                        prev.filter(
+
+                            user =>
+
+                                user.user_id !== data.user_id
+                        )
+                    );
+                }
+            }
+            else {
 
                 setMessages(prev => [
                     ...prev,
@@ -283,8 +407,8 @@ const RoomInner = () => {
                 ]);
             }
         };
-        ws.onclose = () => {
-
+        ws.onclose = (event) => {
+    // console.log(event);
             console.log(
                 "WebSocket Closed"
             );
@@ -661,7 +785,83 @@ const RoomInner = () => {
                     }
                     <div ref={messagesEndRef}></div>
                 </div>
+{
+    typingUsers.length > 0 && (
 
+        <div
+            style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                marginTop: "12px",
+                minHeight: "28px",
+                paddingLeft: "12px"
+            }}
+        >
+
+            <div
+                style={{
+                    display: "flex",
+                    gap: "4px"
+                }}
+            >
+
+                <span
+                    style={{
+                        width: "8px",
+                        height: "8px",
+                        borderRadius: "50%",
+                        background: "#6366f1",
+                        animation: "typingBounce 1.2s infinite"
+                    }}
+                />
+
+                <span
+                    style={{
+                        width: "8px",
+                        height: "8px",
+                        borderRadius: "50%",
+                        background: "#6366f1",
+                        animation: "typingBounce 1.2s infinite 0.2s"
+                    }}
+                />
+
+                <span
+                    style={{
+                        width: "8px",
+                        height: "8px",
+                        borderRadius: "50%",
+                        background: "#6366f1",
+                        animation: "typingBounce 1.2s infinite 0.4s"
+                    }}
+                />
+
+            </div>
+
+            <span
+                style={{
+                    fontSize: "14px",
+                    color: "#6b7280",
+                    fontStyle: "italic",
+                    fontWeight: "500"
+                }}
+            >
+
+                {
+                    typingUsers.length === 1
+
+                        ? `${typingUsers[0].username} is typing...`
+
+                        : `${typingUsers
+                            .map(user => user.username)
+                            .join(", ")} are typing...`
+                }
+
+            </span>
+
+        </div>
+    )
+}
                 {/* Input Area */}
                 <div
                     style={{
@@ -677,9 +877,7 @@ const RoomInner = () => {
 
                         value={messageInput}
 
-                        onChange={(e) => {
-                            setMessageInput(e.target.value);
-                        }}
+                        onChange={handleMessageChange}
 
                         onKeyDown={(e) => {
 

@@ -5,6 +5,8 @@ from .serializers import ChatRoomSerializer
 from rest_framework.response import Response
 from .models import ChatRoom
 
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 class CreateRoom(APIView):
 
@@ -58,6 +60,9 @@ class JoinRoom(APIView):
         try:
 
             room = ChatRoom.objects.get(id=room_id)
+            channel_layer = get_channel_layer()
+
+
 
         except ChatRoom.DoesNotExist:
 
@@ -74,6 +79,15 @@ class JoinRoom(APIView):
         if already_joined:
 
             room.members.remove(request.user)
+            async_to_sync(channel_layer.group_send)(
+                f"chat_{room_id}",
+                {
+                    "type": "members_update",
+                    
+                    "action":"left",
+                    "user_id": request.user.id
+                }
+            )
 
             return Response(
                 {
@@ -85,7 +99,15 @@ class JoinRoom(APIView):
 
         # Join room
         room.members.add(request.user)
-
+        async_to_sync(channel_layer.group_send)(
+                f"chat_{room_id}",
+                {
+                    "type": "members_update",
+                    "action":"joined",
+                    "user_id": request.user.id
+                }
+            )
+        
         return Response(
             {
                 "message": "Joined room successfully",

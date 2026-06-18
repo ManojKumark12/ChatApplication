@@ -1,7 +1,8 @@
 from .redis_client import redis_client
 action_rate_limit_key={
     'chat_messages':10, #per minute
-    'login_request':10
+    'login_request':10,
+    'signup_request':2
 }
 MAX_TIME=60 #per minute
 def get_current_rate_limit_count(key):

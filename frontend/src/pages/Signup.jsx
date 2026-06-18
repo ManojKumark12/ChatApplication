@@ -78,14 +78,23 @@ const Signup = () => {
             );
 
             if (!response.ok) {
+const data = await response.json();
+                if (data.errors) {
 
-                const errorData = await response.json();
+                    Object.values(data.errors)
+                        .flat()
+                        .forEach(error => toast.error(error));
 
-                setErrors(errorData);
+                } else {
 
-                toast.error("Signup failed");
+                    toast.error(
+                        data.message || "Something went wrong."
+                    );
+                }
 
-            } else {
+                return;
+            }
+            else {
 
                 const res = await response.json();
 
@@ -125,7 +134,7 @@ const Signup = () => {
                         />
 
                     </div>
-                    
+
                     <div className="input-group">
                         <label>Full Name</label>
                         <input

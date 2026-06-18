@@ -140,6 +140,18 @@ def Login(request):
     return response
 class Signup(APIView):
     def post(self,request):
+        client_ip = get_client_ip(request)
+
+        if not rate_limit_check(f"user:signup:{client_ip}","signup_request"):
+            return Response(
+                {
+                    "message": (
+                        "Too many  signups. "
+                        "Please try again in 1 minute."
+                    )
+                },
+                status=status.HTTP_429_TOO_MANY_REQUESTS
+            )
         data=request.data
         serializer=UserSerializer(data=data)
         if serializer.is_valid():
@@ -170,13 +182,18 @@ class Signup(APIView):
                     )
             return response
         # print(serializer.errors)
+
+
+        errors = []
+
+        for field_errors in serializer.errors.values():
+            errors.extend(field_errors)
+
         return Response(
-            serializer.errors,
-            ###Serializer.errors looks like this 
-            #             {
-            #   "username": ["Username must be at least 4 characters long"],
-            #   "email": ["user with this email already exists."]
-            # }
+            {
+                "message": errors[0],
+                "errors": serializer.errors
+            },
             status=status.HTTP_400_BAD_REQUEST
         )
 

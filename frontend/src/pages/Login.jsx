@@ -45,17 +45,22 @@ const Login = () => {
         }
       );
 
+      const data = await response.json();
+
       if (!response.ok) {
-        toast.error("Invalid Credentials");
+
+        toast.error(
+          data.message || "Something went wrong."
+        );
+
+        return;
       }
-      else {
-        const userData=await response.json();
-        // console.log(userData.user);
-        toast.success("Login Success!");
-        // data=response.json();
-        dispatch(loginfunc(userData.user));
-        navigateTo(navigate, "/");
-      }
+
+      toast.success(data.message);
+
+      dispatch(loginfunc(data.user));
+
+      navigateTo(navigate, "/");
 
     } catch (error) {
       toast.error(error.message);

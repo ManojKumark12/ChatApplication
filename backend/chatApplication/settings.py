@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-v6r)*%)k(cd@=%bs(%8t#77yej+%iq#jcpq&b+mgrs+1+m+r$o'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG",True)
 
 
 ALLOWED_HOSTS = os.getenv(
@@ -199,7 +199,7 @@ CHANNEL_LAYERS = {
             "channels_redis.core.RedisChannelLayer",
 
         "CONFIG": {
-            "hosts": [("localhost", 6379)],
+            "hosts": [os.getenv("REDIS_URL")],
         },
     },
 }

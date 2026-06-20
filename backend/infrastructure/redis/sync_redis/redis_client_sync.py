@@ -1,7 +1,9 @@
-from redis.asyncio import Redis
-import os
+# redis_client.py
 
-redis_client = Redis.from_url(
+import os
+import redis
+
+redis_client = redis.from_url(
     os.environ["REDIS_URL"],
     decode_responses=True
 )

@@ -1,18 +1,18 @@
 from .redis_client import redis_client
 action_rate_limit_key={
-    'chat_messages':10, #per minute
-    'login_request':10,
+    'chat_messages':5, #per minute
+    'login_request':5,
     'signup_request':2
 }
 MAX_TIME=60 #per minute
-def get_current_rate_limit_count(key):
-    redis_client.incr(key)
-    return int(redis_client.get(key))
-def rate_limit_check(key,action):
-    curr_messages=get_current_rate_limit_count(key)
+
+async def get_current_rate_limit_count(key):
+    return await redis_client.incr(key)
+async def rate_limit_check(key,action):
+    curr_messages=await get_current_rate_limit_count(key)
     max_messages=action_rate_limit_key.get(action)
     if curr_messages==1:
-        redis_client.expire(key,MAX_TIME)
+        await redis_client.expire(key,MAX_TIME)
     if curr_messages>max_messages:
         # print("graterrrrrrrrrrrrrr",curr_messages)
         return False

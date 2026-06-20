@@ -70,7 +70,7 @@ const RoomInner = () => {
     const loadMessages = async () => {
 
         try {
-
+            const startTime = performance.now();
             const response = await apiFetch(
                 `${import.meta.env.VITE_API_URL}/messages/room/${roomId}/`,
                 {
@@ -78,7 +78,11 @@ const RoomInner = () => {
                     credentials: "include"
                 }
             );
+            const endTime = performance.now();
 
+            console.log(
+                `Response time: ${(endTime - startTime).toFixed(2)} ms`
+            );
             let result = {};
 
             try {

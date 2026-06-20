@@ -8,7 +8,8 @@ from .models import User
 from django.contrib.auth import authenticate
 from rest_framework.permissions import IsAuthenticated
 from infrastructure.redis.login_rate_limit import get_client_ip
-from infrastructure.redis.rate_limiting import rate_limit_check
+# from infrastructure.redis.rate_limiting import rate_limit_check
+from infrastructure.redis.sync_redis.rate_limiting import rate_limit_check
 # @api_view(['POST'])
 # def Login(request):
 
@@ -146,7 +147,7 @@ class Signup(APIView):
             return Response(
                 {
                     "message": (
-                        "Too many  signups. "
+                        "Too many  attempts. "
                         "Please try again in 1 minute."
                     )
                 },

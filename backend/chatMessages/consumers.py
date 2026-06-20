@@ -10,6 +10,7 @@ from channels.db import (
 from infrastructure.redis.users_status import set_online,set_offline, get_online_users
 from infrastructure.redis.rate_limiting import rate_limit_check
 from .models import Message
+from infrastructure.redis.redis_client import redis_client
 
 from chatRooms.models import ChatRoom
 
@@ -151,7 +152,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # sender_id = data['sender_id']
 
         ##Rate Limit Check
-        proceed=rate_limit_check(f"rate_limit:messages:user:user_id:{sender_id}",action='chat_messages')
+        proceed=await rate_limit_check(f"rate_limit:messages:user:user_id:{sender_id}",action='chat_messages')
         if not proceed:
             await self.send(
             text_data=json.dumps({
@@ -168,6 +169,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.room_id,
 
             message
+        )
+        await redis_client.delete(
+            f"room:{self.room_id}:messages"
         )
         # print("yoyoyyoyo")
         await self.channel_layer.group_send(#so this function is like a loop:self.channel_layer.group_send(,i.e each consumers channel instance is stored in the group mentioned in group_send(),so every consumer instance gets this info about message and function to execute,and then each consumer executes chat_message() separately,

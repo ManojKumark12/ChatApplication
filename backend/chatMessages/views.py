@@ -5,8 +5,8 @@ from rest_framework.response import Response
 from .models import Message
 from .serializers import MessageSerializer
 from chatRooms.models import ChatRoom
-
-
+from infrastructure.redis.sync_redis.redis_client_sync import redis_client
+import json
 class RoomMessages(APIView):
 
     permission_classes = [IsAuthenticated]
@@ -24,7 +24,6 @@ class RoomMessages(APIView):
                 status=404
             )
 
-        # CHECK MEMBERSHIP
         if not room.members.filter(
             id=request.user.id
         ).exists():
@@ -34,16 +33,33 @@ class RoomMessages(APIView):
                 status=403
             )
 
+        cache_key = f"room:{room_id}:messages"
+
+        cached_messages = redis_client.get(cache_key)
+
+        if cached_messages:
+
+            return Response(
+                json.loads(cached_messages)
+            )
+
         messages = Message.objects.filter(
             room_id=room_id
-        ).order_by('sent_at')
+        ).order_by("sent_at")
 
         serializer = MessageSerializer(
             messages,
             many=True
         )
 
+        redis_client.setex(
+            cache_key,
+            300,  # 5 minutes
+            json.dumps(serializer.data)
+        )
+
         return Response(serializer.data)
+    
 class SendMessage(APIView):
 
     permission_classes = [IsAuthenticated]
@@ -61,7 +77,6 @@ class SendMessage(APIView):
                 status=404
             )
 
-        # CHECK MEMBERSHIP
         if not room.members.filter(
             id=request.user.id
         ).exists():
@@ -84,6 +99,10 @@ class SendMessage(APIView):
             room=room,
             sender=request.user,
             content=content
+        )
+
+        redis_client.delete(
+            f"room:{room_id}:messages"
         )
 
         serializer = MessageSerializer(message)

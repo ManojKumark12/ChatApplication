@@ -182,17 +182,17 @@ const RoomInner = () => {
                 // sender_id: user.id
             })
         );
-               socket.send(
-                    JSON.stringify({
+        socket.send(
+            JSON.stringify({
 
-                        event: "stop_typing",
+                event: "stop_typing",
 
-                        user_id: user.id,
+                user_id: user.id,
 
-                        username: user.username
-                    }));
+                username: user.username
+            }));
         setMessageInput("");
-         
+
     };
     const handleMessageChange = (e) => {
 
@@ -219,7 +219,7 @@ const RoomInner = () => {
             );
 
             typingTimeout.current = setTimeout(() => {
-                    // console.log("sending stop_typing");
+                // console.log("sending stop_typing");
                 socket.send(
                     JSON.stringify({
 
@@ -302,8 +302,8 @@ const RoomInner = () => {
         ws.onmessage = (event) => {
 
             const data = JSON.parse(event.data);
-            if(data.event==='error'){
-                const err_message=data['message']
+            if (data.event === 'error') {
+                const err_message = data['message']
                 toast.error(err_message);
             }
 
@@ -412,7 +412,7 @@ const RoomInner = () => {
             }
         };
         ws.onclose = (event) => {
-    // console.log(event);
+            // console.log(event);
             console.log(
                 "WebSocket Closed"
             );
@@ -789,83 +789,83 @@ const RoomInner = () => {
                     }
                     <div ref={messagesEndRef}></div>
                 </div>
-{
-    typingUsers.length > 0 && (
-
-        <div
-            style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                marginTop: "12px",
-                minHeight: "28px",
-                paddingLeft: "12px"
-            }}
-        >
-
-            <div
-                style={{
-                    display: "flex",
-                    gap: "4px"
-                }}
-            >
-
-                <span
-                    style={{
-                        width: "8px",
-                        height: "8px",
-                        borderRadius: "50%",
-                        background: "#6366f1",
-                        animation: "typingBounce 1.2s infinite"
-                    }}
-                />
-
-                <span
-                    style={{
-                        width: "8px",
-                        height: "8px",
-                        borderRadius: "50%",
-                        background: "#6366f1",
-                        animation: "typingBounce 1.2s infinite 0.2s"
-                    }}
-                />
-
-                <span
-                    style={{
-                        width: "8px",
-                        height: "8px",
-                        borderRadius: "50%",
-                        background: "#6366f1",
-                        animation: "typingBounce 1.2s infinite 0.4s"
-                    }}
-                />
-
-            </div>
-
-            <span
-                style={{
-                    fontSize: "14px",
-                    color: "#6b7280",
-                    fontStyle: "italic",
-                    fontWeight: "500"
-                }}
-            >
-
                 {
-                    typingUsers.length === 1
+                    typingUsers.length > 0 && (
 
-                        ? `${typingUsers[0].username} is typing...`
+                        <div
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "10px",
+                                marginTop: "12px",
+                                minHeight: "28px",
+                                paddingLeft: "12px"
+                            }}
+                        >
 
-                        : `${typingUsers
-                            .map(user => user.username)
-                            .join(", ")} are typing...`
+                            <div
+                                style={{
+                                    display: "flex",
+                                    gap: "4px"
+                                }}
+                            >
+
+                                <span
+                                    style={{
+                                        width: "8px",
+                                        height: "8px",
+                                        borderRadius: "50%",
+                                        background: "#6366f1",
+                                        animation: "typingBounce 1.2s infinite"
+                                    }}
+                                />
+
+                                <span
+                                    style={{
+                                        width: "8px",
+                                        height: "8px",
+                                        borderRadius: "50%",
+                                        background: "#6366f1",
+                                        animation: "typingBounce 1.2s infinite 0.2s"
+                                    }}
+                                />
+
+                                <span
+                                    style={{
+                                        width: "8px",
+                                        height: "8px",
+                                        borderRadius: "50%",
+                                        background: "#6366f1",
+                                        animation: "typingBounce 1.2s infinite 0.4s"
+                                    }}
+                                />
+
+                            </div>
+
+                            <span
+                                style={{
+                                    fontSize: "14px",
+                                    color: "#6b7280",
+                                    fontStyle: "italic",
+                                    fontWeight: "500"
+                                }}
+                            >
+
+                                {
+                                    typingUsers.length === 1
+
+                                        ? `${typingUsers[0].username} is typing...`
+
+                                        : `${typingUsers
+                                            .map(user => user.username)
+                                            .join(", ")} are typing...`
+                                }
+
+                            </span>
+
+                        </div>
+                    )
                 }
-
-            </span>
-
-        </div>
-    )
-}
                 {/* Input Area */}
                 <div
                     style={{
@@ -1017,10 +1017,25 @@ const RoomInner = () => {
                                     <div>
                                         <div
                                             style={{
-                                                fontWeight: "700"
+                                                fontWeight: "700",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                gap: "8px"
                                             }}
                                         >
                                             {member.username}
+
+                                            <span
+                                                style={{
+                                                    width: "10px",
+                                                    height: "10px",
+                                                    borderRadius: "50%",
+                                                    background: onlineUsers.includes(member.id)
+                                                        ? "#22c55e"
+                                                        : "#6b7280",
+                                                    display: "inline-block"
+                                                }}
+                                            />
                                         </div>
 
                                         <div
